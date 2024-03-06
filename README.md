@@ -1,4 +1,4 @@
-# Sistemas Distribuidos y Prograpamacion Parala
+# Sistemas Distribuidos y Programacion Paralela
 -----------------------------------------------
 Repositorio de la materia Sistemas Distribuidos y Programacion Paralela - UNLU 2024
 
