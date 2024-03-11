@@ -1,23 +1,17 @@
 name: GitHub Actions Demo
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 
 jobs:
-  otro-nombre:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Run Commands
-        run: |
-          echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-          echo "Running additional commands..."
-          echo " hola desde sistemas distribuidos usando la rama  ${{ github.ref }}"
-          
-      - name: Check out repository code
-        uses: actions/checkout@v4
-      - run: |
-           echo "💡 The ${{ github.repository }} repository has been cloned "
-           echo " -------"
-          
+    hello-world-job:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Run Commands
+              run: |
+                  echo "👋🏼 Hello world!"
+                  echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+                  echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+                  echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
