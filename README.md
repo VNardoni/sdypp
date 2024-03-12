@@ -7,5 +7,3 @@ Integrantes:
   - Otero Facundo
   - Matias Cosentino
   - Lucas Rueda
-
-  .......
