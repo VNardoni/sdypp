@@ -9,8 +9,7 @@ ZONE = "us-east1"
 # gcloud logging read "resource.type=gce_instance AND protoPayload.methodName=beta.compute.instances.insert"
 
 # AGREGAMOS LA REGLAS DE FIREWALL
-# gcloud compute firewall-rules create allow-ssh --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:22 --source-ranges=0.0.0.0/0
-# gcloud compute firewall-rules create allow-http --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0
+
 
 # GENERACION DE CLAVES 
 
