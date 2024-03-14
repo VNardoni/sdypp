@@ -3,7 +3,6 @@
 USER = "grupo2sdypp"
 ZONE = "us-east1-b"
 
-
 # CREAMOS IP PUBLICA
 
 gcloud compute addresses create instance-public-ip --region="us-east1"
@@ -36,3 +35,7 @@ gcloud compute instances create vm1 \
 # CONEXION A LA VM
 
 gcloud compute ssh vm1 --zone=us-east1-b --ssh-key-file=./id_rsa_example
+
+#Eliminar VM
+
+#gcloud compute instances delete vm --zone=us-east1-b
