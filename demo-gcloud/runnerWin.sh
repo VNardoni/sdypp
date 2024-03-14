@@ -16,7 +16,9 @@ gcloud compute firewall-rules create allow-http --direction=INGRESS --priority=1
 
 ssh-keygen -t rsa -b 4096 -C "${grupodos}@example.com" -f ./id_rsa_example -q -N ""
 
+
 gcloud compute project-info add-metadata --metadata "ssh-keys=${USER}:$(cat ./id_rsa_example.pub)"
+
 
 # CREACION DE LA MAQUINA VIRTUAL
 
@@ -27,7 +29,7 @@ gcloud compute instances create vm ^
     --image-project=ubuntu-os-cloud ^
     --tags=http-server ^
     --metadata="ssh-keys=$(< id_rsa_example.pub)" ^
-    --metadata-from-file=user-data=script.sh ^
+    --metadata-from-file=startup-script=./script.sh ^
     --zone="us-east1-b" ^
     --address="instance-public-ip"
 
