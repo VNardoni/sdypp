@@ -1,3 +1,4 @@
+#Script para cmd Windows
 # VARIABLES
 
 set USER="grupodos"
