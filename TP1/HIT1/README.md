@@ -1,10 +1,19 @@
-# DESDE EL CLIENTE
+# HIT1 
+
+Elabore un código de servidor TCP para B que espere el saludo de A y lo responda.
+Elabore un código de cliente TCP para A que se conecte con B y lo salude.
+
+
+### DESDE EL CLIENTE
 
 • HACEMOS BUILD DE LA IMAGEN 'HIT' •
 
+
 Pararse en ../TP1/HIT1
 
+```
 docker build . -t hit1 -f dockerfiles/hit1.dockerfile
+```
 
 • COLOCAMOS EL TAG A LA IMAGEN 'hit1' •
 
