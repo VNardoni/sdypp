@@ -3,7 +3,8 @@
 Elabore un código de servidor TCP para B que espere el saludo de A y lo responda.
 Elabore un código de cliente TCP para A que se conecte con B y lo salude.
 
-### DESDE EL CLIENTE
+> [!IMPORTANT]
+> DESDE EL CLIENTE.
 
 1. HACEMOS BUILD DE LA IMAGEN 'HIT' 
 
@@ -31,22 +32,30 @@ docker login
 docker push vnardoni/hit1
 ```
 
-==========================================================
 
-# DESDE LA VM DE GCLOUD
+> [!IMPORTANT]
+> DESDE LA VM.
 
-• INSTALAMOS DOCKER • 
+1. INSTALAMOS DOCKER 
 
+```
 sudo apt install docker.io
+```
 
-• LOGIN •
+2. HACEMOS LOGIN 
 
+```
 sudo docker login
+```
 
-• HACEMOS EL PULL DE LA IMAGEN •
+3. HACEMOS EL PULL DE LA IMAGEN 
 
+```
 sudo docker pull vnardoni/hit1
+```
 
-• HACMOE RUN A LA IMAGEN •
+4. HACEMOS RUN A LA IMAGEN 
 
+```
 sudo docker run --name hit1 --rm -p 8080:8080 vnardoni/hit1
+```
