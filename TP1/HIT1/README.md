@@ -3,13 +3,9 @@
 Elabore un código de servidor TCP para B que espere el saludo de A y lo responda.
 Elabore un código de cliente TCP para A que se conecte con B y lo salude.
 
-
 ### DESDE EL CLIENTE
 
 1. HACEMOS BUILD DE LA IMAGEN 'HIT' 
-
-
-[!WARNING]
 
     - Pararse en ../TP1/HIT1
 
@@ -29,7 +25,7 @@ docker tag hit1 vnardoni/hit1
 docker login
 ```
 
-4. HACEMOS PUSH DE LA IMAGEN •
+4. HACEMOS PUSH DE LA IMAGEN 
 
 ```
 docker push vnardoni/hit1
