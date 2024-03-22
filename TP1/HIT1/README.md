@@ -6,26 +6,34 @@ Elabore un código de cliente TCP para A que se conecte con B y lo salude.
 
 ### DESDE EL CLIENTE
 
-• HACEMOS BUILD DE LA IMAGEN 'HIT' •
+1. HACEMOS BUILD DE LA IMAGEN 'HIT' 
 
 
-Pararse en ../TP1/HIT1
+[!WARNING]
+
+    - Pararse en ../TP1/HIT1
 
 ```
 docker build . -t hit1 -f dockerfiles/hit1.dockerfile
 ```
 
-• COLOCAMOS EL TAG A LA IMAGEN 'hit1' •
+2. COLOCAMOS EL TAG A LA IMAGEN 'hit1' 
 
+```
 docker tag hit1 vnardoni/hit1
+```
 
-• LOGIN •
+3. LOGIN 
 
+```
 docker login
+```
 
-• HACEMOS PUSH DE LA IMAGEN •
+4. HACEMOS PUSH DE LA IMAGEN •
 
+```
 docker push vnardoni/hit1
+```
 
 ==========================================================
 
