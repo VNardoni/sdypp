@@ -38,6 +38,8 @@ docker push vnardoni/hit1
 > [!IMPORTANT]
 > DESDE LA VM.
 
+ sudo apt update
+ 
 1. INSTALAMOS DOCKER 
 
 ```

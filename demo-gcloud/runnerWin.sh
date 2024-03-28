@@ -16,7 +16,7 @@ gcloud compute firewall-rules create allow-server-port --direction=INGRESS --pri
 
 # GENERACION DE CLAVES 
 
-ssh-keygen -t rsa -b 4096 -C "${grupodos}@example.com" -f ./id_rsa_example -q -N ""
+ssh-keygen -t rsa -b 4096 -C "${USER}@example.com" -f ./id_rsa_example -q -N ""
 
 
 gcloud compute project-info add-metadata --metadata "ssh-keys=${USER}:$(cat ./id_rsa_example.pub)"
