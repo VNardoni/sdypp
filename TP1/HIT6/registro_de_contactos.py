@@ -1,41 +1,36 @@
 import json
-import signal
 import socket
 import sys
 import threading
 
-
-def handle_signal(signum, frame):
-    print("Deteniendo servidor...")
-    sys.exit(0)
-
 lista_clientes = {"clientes": []}
 corriendo = True
-signal.signal(signal.SIGINT, handle_signal)
 
-def manejar_cliente(client_address, client_socket):
-    print(f"Conexión establecida desde {client_address[0]}:{client_address[1]}")
+def manejar_cliente(client_address,client_socket,puertoEscucha):
+    print(f"Conexión establecida desde {client_address[0]}:{puertoEscucha}")
 
-    lista_clientes["clientes"].append({
-        "IP": client_address[0],
-        "puerto": client_address[1]
-    })
-    
     # Serializar datos de respuesta
     respuesta = json.dumps(lista_clientes)
-    
     client_socket.sendall(respuesta.encode())
     client_socket.close()
+    
+    lista_clientes["clientes"].append({
+        "IP": client_address[0],
+        "puerto": puertoEscucha
+    })
 
 
 def server(server_ip, server_port):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((server_ip, server_port))
     server_socket.listen(10)
-    print(f"Servidor escuchando en {server_ip}:{server_port}. Presione Ctrl + C para salir.")
+    print(f"Servidor escuchando en {server_ip}:{server_port}.")
     while corriendo:
         client_socket, client_address = server_socket.accept()
-        hilo_cliente = threading.Thread(target=manejar_cliente, args=(client_address, client_socket))
+        data = client_socket.recv(1024).decode()
+        data2 = json.loads(data)
+        puertoEscucha = data2['puerto']
+        hilo_cliente = threading.Thread(target=manejar_cliente, args=(client_address, client_socket, puertoEscucha))
         hilo_cliente.start()
 
 def main():
