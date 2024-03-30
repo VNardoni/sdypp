@@ -18,7 +18,7 @@ docker build . -t hit3 -f dockerfiles/hit3.dockerfile
 2. COLOCAMOS EL TAG A LA IMAGEN 'hit3' 
 
 ```
-docker tag hit2 vnardoni/hit3
+docker tag hit3 vnardoni/hit3
 ```
 
 3. LOGIN 
