@@ -33,7 +33,7 @@ docker tag hit6cliente vnardoni/hit6cliente
 docker login
 ```
 
-4. HACEMOS PUSH DE LAs IMAGENES 
+4. HACEMOS PUSH DE LAS IMAGENES 
 
 ```
 docker push vnardoni/hit6server
