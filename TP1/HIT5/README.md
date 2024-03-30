@@ -1,6 +1,6 @@
 # HIT5
 
-Refactoriza el código de los programas A y B en un único programa, que funcione simultáneamente como cliente y servidor. Esto significa que al iniciar el programa C, se le deben proporcionar por parámetros la dirección IP y el puerto para escuchar saludos, así como la dirección IP y el puerto de otro nodo C. De esta manera, al tener dos instancias de C en ejecución, cada una configurada con los parámetros del otro, ambas se saludan mutuamente a través de cada canal de comunicación.
+Modifique el programa C de manera tal que los mensajes se envíen en formato JSON, serializar y deserializar los mismos al enviar/recibir. 
 
 ## ARMADO Y USO DE LA IMAGEN 
 
@@ -72,3 +72,5 @@ python cliente_y_servidor.py localhost 8080
 ```
 
 Al iniciar el programa se crea un hilo para iniciar el servidor el cual escuchara conexiones del cliente. El servidor recibira los parametros utilizados al iniciar el programa, los cuales indican la IP y PORT en el que escuchara. El cliente se ejecutara en otro hilo utilizando los parametros ingresados para conectarse al servidor. Ambos realizan el intercambio de mensajes finalizando la conexion.
+
+A diferencian del [HIT4](./HIT4/README.md) los mensajes se envian en formato JSON.
