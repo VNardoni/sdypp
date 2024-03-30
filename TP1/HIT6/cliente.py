@@ -3,6 +3,7 @@ import sys
 import threading
 import json
 import random
+import os
 
 # GENERAMOS PUERTO ESCUCHA
 
@@ -18,12 +19,14 @@ def server(puertoEscucha):
     server_socket.listen(10)
     
     while True:
+        print("** ESPERANDO SALUDOS **")
+        print("")
         client_socket, client_address = server_socket.accept()
         print(f" == CONEXION ESTABLECIDA DESDE: {client_address} ==")
         print("")
 
         data = client_socket.recv(1024).decode()
-        print(f"[MENSAJE RECIBIDO] {data}")
+        print(f"[MENSAJE RECIBIDO] - {data}")
         print("")
 
         client_socket.close()
@@ -33,10 +36,13 @@ def server(puertoEscucha):
 def recibir_registro_contactos(server_ip, server_port,puertoEscucha):
     
     print(" == SOY UN NUEVO CLIENTE ==")
-    print(f"[IP] {server_ip}")
-    print(f"[PORT] {puertoEscucha}")
+    print(f"== [IP] {server_ip}")
+    print(f"== [PORT] {puertoEscucha}")
+    print("============================")
     print("")
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    
+    print(server_port)
     client_socket.connect((server_ip, server_port))
     
     # Enviar la dirección IP y puerto propios al servidor de registro de contactos (D) 
@@ -69,6 +75,7 @@ def saludar_a_contactos(registro_contactos, puertoEscucha):
         print("Este nodo con "+ ip + " se encuentra fuera de servicio")
 
     finally:
+        print("")
         print("[TODOS LOS SALUDOS ENVIADOS]")
         print("============================")
         print("")
@@ -91,6 +98,7 @@ def main():
     registro_contactos = recibir_registro_contactos(server_ip, server_port,puertoEscucha)
     print("LISTA DE CLIENTES:")
     print(registro_contactos)
+    print("")
     
     # Saludar a cada nodo C registrado
     saludar_a_contactos(registro_contactos, puertoEscucha)

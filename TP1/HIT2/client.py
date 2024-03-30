@@ -1,7 +1,7 @@
 import socket
 import time 
 
-IP = 'localhost'
+IP = '34.73.239.114'
 PORT = 8080
 
 
@@ -10,11 +10,11 @@ while True:
         client_socket = socket.socket()
         client_socket.connect((IP,PORT))
 
-        client_socket.send("[CLIENTE] Hola desde el cliente".encode())
+        client_socket.send("Hola desde el cliente".encode())
 
         respuesta = client_socket.recv(1024).decode()
         
-        print(respuesta)
+        print(f"[SERVIDOR] - {respuesta}")
     except: 
         print("NO HAY NINGUNA CONEXION ABIERTA")
         time.sleep(5)

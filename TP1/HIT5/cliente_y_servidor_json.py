@@ -8,18 +8,20 @@ def server(ip, port):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind((ip, port))
     server_socket.listen(1)
-    print(f"Servidor escuchando en {ip}:{port}")
+    print(f"== [SERVIDOR ESCUCHANDO]  {ip}:{port} ==")
+    print("")
 
     while True:
         client_socket, client_address = server_socket.accept()
-        print(f"Conexión establecida desde {client_address}")
+        print(f"[CONEXION ESTABLECIDA] CLIENTE » {client_address}")
+        print("")
 
         data = client_socket.recv(1024).decode()
        
         
         #deserializa el msj recibido
         saludo_recibido = json.loads(data)
-        print(f"Mensaje recibido: {saludo_recibido}")
+        print(f"[CLIENTE] - {saludo_recibido}")
 
         datos_respuesta = {"mensaje": "Hola, soy el servidor. Como estas?"}
         
@@ -32,7 +34,7 @@ def server(ip, port):
 
     time.sleep(1)
     server_socket.close()
-    print("Conexión cerrada por el servidor")
+    print("[CONEXION CERRADA POR EL SERVIDOR]")
 
 def client(server_ip, server_port):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -47,7 +49,7 @@ def client(server_ip, server_port):
     client_socket.sendall(saludo_json.encode())
 
     data = client_socket.recv(1024).decode()
-    print(f"Respuesta del servidor: {data}")
+    print(f"[SERVIDOR] - {data}")
 
     client_socket.close()
 

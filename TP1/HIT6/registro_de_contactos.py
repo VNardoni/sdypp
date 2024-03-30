@@ -7,7 +7,7 @@ lista_clientes = {"clientes": []}
 corriendo = True
 
 def manejar_cliente(client_address,client_socket,puertoEscucha):
-    print(f"Conexión establecida desde {client_address[0]}:{puertoEscucha}")
+    print(f"[CONEXION ESTABLECIDA] CLIENT » {client_address[0]}:{puertoEscucha}")
 
     # Serializar datos de respuesta
     respuesta = json.dumps(lista_clientes)

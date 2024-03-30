@@ -8,6 +8,6 @@ client_socket.send("Hola desde el cliente".encode())
 
 respuesta = client_socket.recv(1024).decode()
 
-print(respuesta)
+print(f"[SERVIDOR] - {respuesta}")
 
 client_socket.close()

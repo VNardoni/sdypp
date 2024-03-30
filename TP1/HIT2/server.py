@@ -8,7 +8,8 @@ port = 8080
 server_socket = socket.socket()
 
 # Asigna la dirección y puerto al socket
-print(f"Iniciando servidor en {host} puerto {port}")
+print(f"== Iniciando servidor en {host} puerto {port} ==")
+print("")
 server_socket.bind((host,port))
 
 # Escucha por conexiones entrantes
@@ -21,12 +22,12 @@ print("- ESPERANDO UNA CONEXION -")
 client_socket, addr = server_socket.accept()
 
 
-print(f"[CONEXION ESTABLECIDA] IP CLIENTE: {addr}")
+print(f"[CONEXION ESTABLECIDA] {addr}")
 
 respuesta = client_socket.recv(1024).decode()
-print(respuesta)
+print(f"[CLIENTE] - {respuesta}")
 
-client_socket.send("[SERVIDOR] Te saludo desde el servidor".encode())
+client_socket.send("Te saludo desde el servidor".encode())
 
 server_socket.close()
  
