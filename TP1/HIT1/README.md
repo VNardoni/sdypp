@@ -55,7 +55,7 @@ sudo docker login
 3. HACEMOS EL PULL DE LA IMAGEN 
 
 ```
-sudo docker pull vnardoni/hit1g
+sudo docker pull vnardoni/hit1
 ```
 
 4. HACEMOS RUN A LA IMAGEN 
