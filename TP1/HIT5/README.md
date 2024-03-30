@@ -65,10 +65,10 @@ sudo docker run --name hit5 --rm -p 8080:8080 vnardoni/hit5 localhost 8080
 
 ## FUNCIONAMIENTO
 
-Se ejecuta el archivo 'cliente_y_servidor.py', pasandole como parametro IP PUERTO
+Se ejecuta el archivo 'cliente_y_servidor_json.py', pasandole como parametro IP PUERTO
 
 ```
-python cliente_y_servidor.py localhost 8080
+python cliente_y_servidor_json.py localhost 8080
 ```
 
 Al iniciar el programa se crea un hilo para iniciar el servidor el cual escuchara conexiones del cliente. El servidor recibira los parametros utilizados al iniciar el programa, los cuales indican la IP y PORT en el que escuchara. El cliente se ejecutara en otro hilo utilizando los parametros ingresados para conectarse al servidor. Ambos realizan el intercambio de mensajes finalizando la conexion.
