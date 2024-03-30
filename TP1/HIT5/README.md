@@ -73,4 +73,4 @@ python cliente_y_servidor.py localhost 8080
 
 Al iniciar el programa se crea un hilo para iniciar el servidor el cual escuchara conexiones del cliente. El servidor recibira los parametros utilizados al iniciar el programa, los cuales indican la IP y PORT en el que escuchara. El cliente se ejecutara en otro hilo utilizando los parametros ingresados para conectarse al servidor. Ambos realizan el intercambio de mensajes finalizando la conexion.
 
-A diferencian del [HIT4](./HIT4/README.md) los mensajes se envian en formato JSON.
+A diferencian del [HIT4](https://github.com/VNardoni/sdypp/tree/main/TP1/HIT4) los mensajes se envian en formato JSON.
