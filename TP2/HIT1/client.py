@@ -15,5 +15,8 @@ parametros = {
 response = requests.get('http://localhost:5000/getRemoteTask', json=parametros)
 
 # PROCESAR LA RESPUESTA DEL SERVIDOR
-resultado = response.json()
-print('Resultado de la tarea:', resultado)
+if response.status_code == 200:
+    resultado = response.json()
+    print('Resultado de la tarea: ', resultado)
+else:
+    print("Error: ", response.status_code)
