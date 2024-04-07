@@ -1,11 +1,14 @@
 import requests
 import json
 
+NOMBRE_IMAGEN = "lucasrueda01/tarea_remota"
+
 # DATOS A ENVIAR
 parametros = { 
     "parametro1": 10,
     "parametro2": 20,
-    "operacion": "suma"
+    "operacion": "suma",
+    "imagen": NOMBRE_IMAGEN
 }
 
 # REQUEST AL SERVIDOR
