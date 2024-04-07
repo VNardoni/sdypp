@@ -9,8 +9,7 @@ def ejecutar_tarea():
     return resultado
 
 def procesar_tarea(tarea):
-    # Aquí va la lógica para procesar la tarea
-    # Por ejemplo, realizar un cálculo o manipulación de datos
+    # PROCESO DE LA TAREA
     resultado = tarea['parametro1'] + tarea['parametro2']
     return {'resultado': resultado}
 

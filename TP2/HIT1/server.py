@@ -16,7 +16,7 @@ def get_remote_task():
         return 'Método no permitido', 405
 
 def ejecutar_tarea_remota(tarea):
-    # Comunicarse con el servicio tarea
+    # COMUNICACION CON LA TAREA REMOTA
     response = requests.post('http://localhost:5001/ejecutarTarea', json=tarea)
     return response.json()
 

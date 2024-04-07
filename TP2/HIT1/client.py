@@ -1,7 +1,7 @@
 import requests
 import json
 
-# Datos de la tarea a enviar
+# DATOS A ENVIAR
 parametros = { 
     "parametro1": 10,
     "parametro2": 20 
@@ -9,10 +9,10 @@ parametros = {
 
 
 
-# Realizar solicitud al servidor
+# ROST AL SERVIDOR
 response = requests.post('http://localhost:5000/getRemoteTask', json=parametros)
 
-# Procesar la respuesta del servidor
+# PROCESAR LA RESPUESTA DEL SERVIDOR
 print("LLEGUE ACA")
 print(response)
 resultado = response.json()
