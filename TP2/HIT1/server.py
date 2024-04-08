@@ -20,6 +20,7 @@ def ejecutar_tarea_remota(tarea, ip_contenedor):
     # COMUNICACION CON LA TAREA REMOTA
     print("IP CONTENEDOR: " + ip_contenedor)
     if (ip_contenedor != ""):
+        print("Conectando a tarea remota...")
         response = requests.get(f'http://{ip_contenedor}:5001/ejecutarTarea', json=tarea)
         return response.json()
     else:
@@ -28,22 +29,23 @@ def ejecutar_tarea_remota(tarea, ip_contenedor):
 
 def levantarContenedor(imagen):
     cliente = docker.from_env()
-    contenedor = cliente.containers.run(imagen, detach=True, auto_remove=True, ports={'5001/tcp': 5001})
-        
-        # Esperar hasta que el contenedor esté en ejecución
+    imagen_docker = cliente.images.get(imagen)
+    contenedor = cliente.containers.run(imagen_docker, auto_remove=True, detach=True, ports={'5001/tcp': 5001}, network_mode='bridge')
+ 
+    # Esperar hasta que el contenedor esté en ejecución
     while True:
         try:
-            contenedor.reload()  # Actualizar los atributos del contenedor
+            contenedor.reload()
+            print("Estado: " + contenedor.status)  
             if contenedor.status == "running":
+                contenedor_info = cliente.containers.get(contenedor.id)
+                contenedor_ip = contenedor_info.attrs['NetworkSettings']['IPAddress']
                 break
         except docker.errors.NotFound:
-            pass  # Ignorar la excepción si el contenedor no se encuentra
-        time.sleep(1)  # Esperar un segundo antes de verificar nuevamente
-        
-        # Obtener la IP del contenedor
-        contenedor_info = cliente.containers.get(contenedor.id)
-        contenedor_ip = contenedor_info.attrs['NetworkSettings']['IPAddress']
-        
+            print("No se encontro el contenedor") 
+        print("Reintentado...")
+        time.sleep(2) 
+
     return contenedor_ip
 
 
