@@ -18,20 +18,20 @@ def get_remote_task():
 
 def ejecutar_tarea_remota(tarea, ip_contenedor):
     # COMUNICACION CON LA TAREA REMOTA
-    print("IP CONTENEDOR: " + ip_contenedor)
-    if (ip_contenedor != ""):
-        print("Conectando a tarea remota...")
-        response = requests.get(f'http://{ip_contenedor}:5001/ejecutarTarea', json=tarea)
-        return response.json()
-    else:
-        return {"mensaje": "Error al crear contenedor"}
+    # print("IP CONTENEDOR: " + ip_contenedor)
+    # if (ip_contenedor != ""):
+    print("Conectando a tarea remota...")
+    response = requests.get(f'http://localhost:5001/ejecutarTarea', json=tarea)
+    return response.json()
+    # else:
+    #     return {"mensaje": "Error al crear contenedor"}
 
 
 def levantarContenedor(imagen):
     cliente = docker.from_env()
-    imagen_docker = cliente.images.get(imagen)
-    contenedor = cliente.containers.run(imagen_docker, auto_remove=True, detach=True, ports={'5001/tcp': 5001}, network_mode='bridge')
- 
+    id_imagen = cliente.images.get(imagen)
+    contenedor = cliente.containers.run(id_imagen, auto_remove=True, detach=True, network_mode='host')
+    
     # Esperar hasta que el contenedor esté en ejecución
     while True:
         try:
