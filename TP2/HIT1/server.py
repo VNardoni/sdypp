@@ -1,53 +1,51 @@
-import time
 from flask import Flask, request, jsonify
 import requests
 import docker
+import time
 
 app = Flask(__name__)
 
-# ENDPOINT TAREA REMOTA DESDE SERVIDOR
-@app.route('/getRemoteTask', methods=['GET'])
+@app.route('/getRemoteTask', methods=['GET', 'POST'])
 def get_remote_task():
-    if request.method == 'GET':
-        tarea = request.json
-        ip_contenedor = levantarContenedor(tarea["imagen"])
-        resultado_tarea = ejecutar_tarea_remota(tarea, ip_contenedor)
-        return jsonify(resultado_tarea)
+    if request.method == 'POST':
+        tarea = request.get_json()
+        print(tarea)
+
+        #  Creo el cliente
+        client = docker.from_env()
+
+         # Le indico el nombre del docker de tarea_remota
+        nombreImagen = "vnardoni/tarea_remota"
+
+        # Hago pull de la image
+        client.images.pull(nombreImagen)
+        print("[IMAGEN DESCARGADA]")
+
+        # Levanto el contenedor 
+        id_container = client.containers.run(nombreImagen, detach=True, ports={'5000/tcp': 5000})
+        container = client.containers.get(id_container.id)
+        print("[CONTENEDOR CORRIENDO]")
+
+        time.sleep(5)
+
+        response = requests.post('http://localhost:5000/ejecutarTarea', json=tarea)
+        print("[TAREA RECIBIDA CON EXITO]")
+
+        container.stop()
+        container.remove()
+        print("[CONTENEDOR ELIMINADO]")
+        return response.json()
     else:
         return 'Método no permitido', 405
 
-def ejecutar_tarea_remota(tarea, ip_contenedor):
-    # COMUNICACION CON LA TAREA REMOTA
-    # print("IP CONTENEDOR: " + ip_contenedor)
-    # if (ip_contenedor != ""):
-    print("Conectando a tarea remota...")
-    response = requests.get(f'http://localhost:5001/ejecutarTarea', json=tarea)
-    return response.json()
-    # else:
-    #     return {"mensaje": "Error al crear contenedor"}
 
 
-def levantarContenedor(imagen):
-    cliente = docker.from_env()
-    id_imagen = cliente.images.get(imagen)
-    contenedor = cliente.containers.run(id_imagen, auto_remove=True, detach=True, network_mode='host')
-    
-    # Esperar hasta que el contenedor esté en ejecución
-    while True:
-        try:
-            contenedor.reload()
-            print("Estado: " + contenedor.status)  
-            if contenedor.status == "running":
-                contenedor_info = cliente.containers.get(contenedor.id)
-                contenedor_ip = contenedor_info.attrs['NetworkSettings']['IPAddress']
-                break
-        except docker.errors.NotFound:
-            print("No se encontro el contenedor") 
-        print("Reintentado...")
-        time.sleep(2) 
 
-    return contenedor_ip
 
+def getIpContenedor (nombreContenedor, client, red):
+    infoRed = client.networks.get(red).attrs
+    return infoRed['Containers'][nombreContenedor]['IPv4Address']
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=8080)
+

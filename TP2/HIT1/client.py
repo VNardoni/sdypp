@@ -1,22 +1,21 @@
 import requests
 import json
 
-NOMBRE_IMAGEN = "lucasrueda01/tarea_remota"
-
-# DATOS A ENVIAR
+# Datos de la tarea a enviar
 parametros = { 
-    "parametro1": 10,
-    "parametro2": 20,
-    "operacion": "suma",
-    "imagen": NOMBRE_IMAGEN
+    "parametro1": 50,
+    "parametro2": 25,
+    "operacion": "multiplicacion"
 }
 
-# REQUEST AL SERVIDOR
-response = requests.get('http://localhost:5000/getRemoteTask', json=parametros)
+headers = {'Content-Type': 'application/json'}
+jsonParametros = json.dumps(parametros)
 
-# PROCESAR LA RESPUESTA DEL SERVIDOR
-if response.status_code == 200:
-    resultado = response.json()
-    print('Resultado de la tarea: ', resultado)
-else:
-    print("Error: ", response.status_code)
+# Realizar solicitud al servidor
+response = requests.post('http://localhost:8080/getRemoteTask', data=jsonParametros, headers=headers)
+
+# Procesar la respuesta del servidor
+print("LLEGUE ACA")
+print(response)
+resultado = response.json()
+print('Resultado de la tarea:', resultado)
