@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 # ENDPOINT TAREA REMOTA
-@app.route('/ejecutarTarea', methods=['GET'])
+@app.route('/ejecutarTarea', methods=['POST'])
 def ejecutar_tarea():
     tarea = request.json
     resultado = procesar_tarea(tarea)
@@ -22,8 +22,9 @@ def procesar_tarea(tarea):
             resultado = division(tarea['parametro1'], tarea['parametro2'])
         case _:
             resultado = "Operacion no valida"
-                   
-    return {'resultado': resultado}
+    
+    data = {'resultado': resultado}     
+    return jsonify(data)
 
 def suma(a, b):
     return a + b
@@ -41,4 +42,4 @@ def division(a , b):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5000, host="0.0.0.0")

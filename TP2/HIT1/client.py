@@ -1,7 +1,15 @@
+import sys
 import requests
 import json
 
-NOMBRE_IMAGEN = "lucasrueda01/tarea_remota"
+
+if (len(sys.argv) != 2):
+    print("Se requiere como unico argumento el nombre de la imagen")
+    sys.exit(1)
+
+NOMBRE_IMAGEN = sys.argv[1]
+IP = "34.73.239.114" #La IP de la VM es estatica, si cambia implementar un fix en el futuro
+PORT = 8080
 
 # DATOS A ENVIAR
 parametros = { 
@@ -11,8 +19,10 @@ parametros = {
     "imagen": NOMBRE_IMAGEN
 }
 
+parametros = json.dumps(parametros)
+headers = {'Content-Type': 'application/json'}
 # REQUEST AL SERVIDOR
-response = requests.get('http://localhost:5000/getRemoteTask', json=parametros)
+response = requests.post(f'http://{IP}:{PORT}/getRemoteTask', data=parametros, headers=headers)
 
 # PROCESAR LA RESPUESTA DEL SERVIDOR
 if response.status_code == 200:
