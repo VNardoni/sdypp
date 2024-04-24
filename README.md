@@ -5,8 +5,8 @@ Repositorio de la materia Sistemas Distribuidos y Programacion Paralela - UNLU 2
 Integrantes:
   - Nardoni Valentin
   - Otero Facundo
-  - Matias Cosentino
-  - Lucas Rueda
+  - Cosentino Matias
+  - Rueda Lucas
 
 ## DASHBOARD
 ### TP1
