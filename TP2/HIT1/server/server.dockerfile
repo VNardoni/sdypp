@@ -6,6 +6,6 @@ RUN pip install flask requests docker
 
 ADD server/server.py /pythonapp/server.py
 
-EXPOSE 8080
+EXPOSE 8210
 
 ENTRYPOINT ["python3", "server.py"]

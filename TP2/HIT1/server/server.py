@@ -39,6 +39,13 @@ def get_remote_task():
     
     return jsonify(resultado_tarea)
 
+@app.route(rule="/status", methods=["GET"])
+def status():
+    data = {
+        "ESTADO DEL SERVICIO": "Funcionando"
+    }
+    print(data)
+    return data
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080, host="0.0.0.0")
+    app.run(debug=True, port=8210, host="0.0.0.0")
