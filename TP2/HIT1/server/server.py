@@ -47,5 +47,15 @@ def status():
     print(data)
     return data
 
+# ENDPOINT SERVER STATUS
+@app.route(rule="/status", methods=["GET"])
+def status():
+    data = {
+        "ESTADO DEL SERVICIO": "Funcionando"
+    }
+    print(data)
+    return data
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=8210, host="0.0.0.0")
