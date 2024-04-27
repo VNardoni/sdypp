@@ -3,8 +3,8 @@ import requests
 import json
 
 
-if (len(sys.argv) != 2):
-    print("Se requiere como unico argumento el nombre de la imagen")
+if (len(sys.argv) != 5):
+    print("Se requieren los siguientes argumentos: <nombre_imagen> <parametro1> <operacion> <parametro2>")
     sys.exit(1)
 
 NOMBRE_IMAGEN = sys.argv[1]
@@ -13,9 +13,9 @@ PORT = 8210
 
 # DATOS A ENVIAR
 parametros = { 
-    "parametro1": 10,
-    "parametro2": 20,
-    "operacion": "suma",
+    "parametro1": int(sys.argv[2]),
+    "parametro2": int(sys.argv[4]),
+    "operacion": sys.argv[3],
     "imagen": NOMBRE_IMAGEN
 }
 

@@ -10,4 +10,11 @@
 ## De forma local
 
 `cd TP2\HIT1`
-`python client.py lucasrueda01/tarea_remota`
+`python client.py <nombre-imagen> <parametro1> <operador> <parametro2>`
+
+Imagenes 
+lucasrueda01/tarea_op_basicas -> Operaciones matematicas (+, -, * y /)
+lucasrueda01/tarea_op_logicas -> Operaciones logicas (>, <, =, !=)
+
+Ejemplo
+`python .\client.py lucasrueda01/tarea_op_logicas 10 ">" 40`
