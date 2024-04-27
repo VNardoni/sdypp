@@ -14,13 +14,13 @@ def ejecutar_tarea():
 def procesar_tarea(tarea):
     # PROCESO DE LA TAREA
     match tarea["operacion"].lower():
-        case "suma":
+        case "+":
             resultado = suma(tarea['parametro1'], tarea['parametro2'])
-        case "resta":
+        case "-":
             resultado = resta(tarea['parametro1'], tarea['parametro2']) 
-        case "multiplicacion":
+        case "*":
             resultado = multiplicacion(tarea['parametro1'], tarea['parametro2'])
-        case "division":
+        case "/":
             resultado = division(tarea['parametro1'], tarea['parametro2'])
         case _:
             resultado = "Operacion no valida"
