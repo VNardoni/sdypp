@@ -5,7 +5,7 @@
 `sudo apt update`
 `sudo apt install docker.io`
 `sudo docker pull lucasrueda01/server`
-`sudo docker run -d --rm  -v /var/run/docker.sock:/var/run/docker.sock -p 8080:8080 lucasrueda01/server`
+`sudo docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -p 8210:8210 lucasrueda01/server`
 
 ## De forma local
 

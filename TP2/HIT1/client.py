@@ -9,7 +9,7 @@ if (len(sys.argv) != 2):
 
 NOMBRE_IMAGEN = sys.argv[1]
 IP = "34.73.239.114" #La IP de la VM es estatica, si cambia implementar un fix en el futuro
-PORT = 8080
+PORT = 8210
 
 # DATOS A ENVIAR
 parametros = { 
