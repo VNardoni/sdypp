@@ -13,9 +13,9 @@ PORT = 8210
 
 # DATOS A ENVIAR
 parametros = { 
-    "parametro1": 30,
-    "parametro2": 0,
-    "operacion": "division",
+    "parametro1": sys.argv[2],
+    "parametro2": 1014,
+    "operacion": "multiplicacion",
     "imagen": NOMBRE_IMAGEN
 }
 
