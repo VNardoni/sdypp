@@ -12,7 +12,7 @@
 `cd TP2\HIT1`
 `python client.py <nombre-imagen> <parametro1> <operador> <parametro2>`
 
-Imagenes 
+Imagenes
 lucasrueda01/tarea_op_basicas -> Operaciones matematicas (+, -, * y /)
 lucasrueda01/tarea_op_logicas -> Operaciones logicas (>, <, =, !=)
 
