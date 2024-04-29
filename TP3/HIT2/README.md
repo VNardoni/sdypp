@@ -126,10 +126,9 @@ Descarga local:
 
 ![alt text](image-1.png)
 
-Se puede observar que cuando realizamos la descarga en la vm tarda 47 segundos mientras que localmente habiendo trascurridos 3 minutos a penas se recivieron 438MB de los 4784MB.
+Se puede observar que, cuando realizamos la descarga en la VM, tarda 47 segundos, mientras que localmente, habiendo transcurrido 3 minutos, apenas se recibieron 438MB de los 4784MB.
 
-Esta diferencia puede deberse al ancho de banda de red de alta velocidad que utiliza la VM de Google Cloud y a las limitaciones que puede tener nuestra red como el ancho de banda contratado, la congestion de la red, etc.
-Otra de las causas puede deberse a la ubicacion de los servidores que almacenan los archivos que se estan descargando, gcloud puede tener sus servidores geograficamente mas cerca que nuestra maquina local.
+Esta diferencia puede deberse al ancho de banda de red de alta velocidad que utiliza la VM de Google Cloud, y a las limitaciones que puede tener nuestra red, como el ancho de banda contratado, la congestión de la red, etc. Otra de las causas puede deberse a la ubicación de los servidores que almacenan los archivos que se están descargando; gcloud puede tener sus servidores geográficamente más cerca que nuestra máquina local.
 
 ### Copia de archivos con scp
  
