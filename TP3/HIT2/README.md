@@ -140,7 +140,7 @@ scp -i ./.ssh/google_compute_engine ./copiaArchivo.txt ${ssh_username}@${instanc
 ```
 ![alt text](image-2.png)
 
-#### De local a vm
+#### De vm a local
 ```
 scp -i ./.ssh/google_compute_engine ${ssh_username}@${instance_ip}:copiaArchivo.txt . 
 
