@@ -1,32 +1,30 @@
 # Relevancia y Utilidad del Servicio:
 ## ●	¿En qué escenarios específicos sería crucial y absolutamente necesario disponer de servicios como el desarrollado en este ejercicio?
-Este tipo de servicio sería crucial en entornos donde se necesite ejecutar tareas de manera remota y dinámica.
-Donde el servidor puede ejecutar N microservicios de manera tal que se pueda crecer horizontalmente y se creen los microservicios dinámicamente . Este enfoque facilita la gestión y el despliegue de aplicaciones, así como la adaptación a cambios en la carga de trabajo o en los requisitos del sistema de manera eficiente y flexible. Además, al utilizar contenedores Docker, se promueve la portabilidad y la consistencia del entorno de ejecución, lo que simplifica el desarrollo y la implementación de aplicaciones en diferentes entornos de infraestructura.
+Sería crucial en entornos donde se necesite ejecutar tareas de manera remota y dinámica.
+Donde el servidor puede ejecutar N microservicios de manera tal que se pueda crecer horizontalmente y se creen los microservicios dinámicamente . Este enfoque facilita la gestión y el despliegue de aplicaciones, así como la adaptación a cambios en los requisitos del sistema de manera eficiente y flexible. Además al utilizar contenedores Docker, se promueve la portabilidad y la consistencia del entorno de ejecución, lo que simplifica el desarrollo y la implementación de aplicaciones en diferentes entornos de infraestructura.
 
 ## ●	¿Cómo estos servicios podrían beneficiar a las empresas o proyectos en términos de eficiencia, escalabilidad y flexibilidad?
-Estos servicios pueden beneficiar a las empresas o proyectos en términos de eficiencia, escalabilidad y flexibilidad. Al externalizar el procesamiento de tareas a un servicio remoto, las empresas pueden aprovechar recursos computacionales adicionales según sea necesario, sin tener que mantener infraestructuras costosas localmente. Además, al contenerizar las soluciones de las tareas, se facilita la distribución y el despliegue, lo que permite una escalabilidad eficiente donde se permite escalar cada componente de manera independiente según la demanda. Esto significa que los recursos pueden asignarse de manera más eficiente a los microservicios que experimentan picos de carga, garantizando un rendimiento óptimo en todo momento sin desperdiciar recursos en servicios menos utilizados. Además, al permitir la comunicación con el servidor a través de HTTP, estos servicios son flexibles y pueden integrarse fácilmente en sistemas existentes, esto permite a las empresas adaptarse rápidamente a los cambios en los requisitos comerciales y tecnológicos. Pueden agregar, actualizar o eliminar microservicios según sea necesario, sin afectar al resto del sistema. Esto facilita la experimentación y la innovación, ya que las nuevas características pueden ser implementadas y probadas de manera aislada antes de ser desplegadas a gran escala.
+Al externalizar el procesamiento de tareas a un servicio remoto las empresas no tienen que mantener infraestructuras costosas localmente. Al contenerizar las soluciones de las tareas se facilita la distribución y el despliegue. Esto significa que los recursos pueden asignarse de manera más eficiente a los microservicios que experimentan picos de carga, garantizando un rendimiento óptimo en todo momento sin desperdiciar recursos en servicios menos utilizados. Además, al permitir la comunicación con el servidor a través de HTTP, estos servicios son flexibles y pueden integrarse fácilmente en sistemas existentes, lo cual permiten a las empresas adaptarse rápidamente a los cambios en los requisitos comerciales y tecnológicos. Pueden agregar, actualizar o eliminar microservicios según sea necesario, sin afectar al resto del sistema.
 
 # Alternativas de stack tecnológico:
 
-## ●	Además de la arquitectura basada en un Servidor HTTP, ¿qué otras tecnologías alternativas podrían haber sido empleadas para implementar la ejecución de tareas remotas?
+## ●Además de la arquitectura basada en un Servidor HTTP, ¿qué otras tecnologías alternativas podrían haber sido empleadas para implementar la ejecución de tareas remotas?
 
-####  Implementación de un sistema de mensajería o eventos:
-
-Introducir un sistema de mensajería o eventos como Apache Kafka, RabbitMQ o Amazon SQS.Cuando el cliente envía una solicitud al servidor para ejecutar una tarea, en lugar de procesarla de manera síncrona, el servidor publica un mensaje en una cola de mensajes.
+Implementación de un sistema de mensajería o eventos:
+Introducir un sistema de mensajería o eventos como Apache Kafka, RabbitMQ o Amazon SQS. Cuando el cliente envía una solicitud al servidor para ejecutar una tarea, en lugar de procesarla de manera síncrona, el servidor publica un mensaje en una cola de mensajes.
 El "servicio tarea" se suscribe a esta cola y procesa los mensajes de manera asíncrona.
 Una vez que se completa la tarea, el "servicio tarea" puede publicar el resultado en otra cola de mensajes.
 El servidor puede entonces suscribirse a esta cola y enviar la respuesta al cliente.
 
-#### Sockets TCP:
-Los sockets TCP son comúnmente utilizados en arquitecturas cliente-servidor, donde un servidor espera conexiones entrantes de clientes y luego establece una conexión TCP con cada cliente para intercambiar datos.Pueden ser utilizados para establecer una comunicación fiable y orientada a la conexión entre estas aplicaciones distribuidas. 
+Sockets TCP:
+Los sockets TCP son comúnmente utilizados en arquitecturas cliente-servidor, donde un servidor espera conexiones entrantes de clientes y luego establece una conexión TCP con cada cliente para intercambiar datos. Pueden ser utilizados para establecer una comunicación fiable y orientada a la conexión entre estas aplicaciones distribuidas. 
 
-#### Remote Procedure Call:
+Remote Procedure Call:
 RPC es una herramienta poderosa para simplificar el desarrollo de aplicaciones distribuidas al proporcionar una forma conveniente y eficiente de invocar procedimientos remotos a través de la red. Permite a los desarrolladores concentrarse en la lógica de la aplicación sin tener que preocuparse por los detalles de la comunicación en red.
 
+## ●¿Qué consideraciones deberían tenerse en cuenta al elegir una tecnología alternativa para garantizar la eficacia y la escalabilidad del sistema?
 
-## ●	¿Qué consideraciones deberían tenerse en cuenta al elegir una tecnología alternativa para garantizar la eficacia y la escalabilidad del sistema?
-
-Al elegir una tecnología alternativa para garantizar la eficacia y la escalabilidad del sistema, es importante tener en cuenta una serie de consideraciones clave:
+Es importante tener en cuenta una serie de consideraciones clave:
 
 - **Escalabilidad horizontal:** La tecnología seleccionada debe admitir la escalabilidad horizontal, lo que significa que pueda distribuir la carga de trabajo entre múltiples instancias o nodos para manejar un mayor volumen de solicitudes. Esto es fundamental para garantizar que el sistema pueda crecer de manera efectiva a medida que aumenta la demanda.
 
@@ -44,16 +42,7 @@ Al elegir una tecnología alternativa para garantizar la eficacia y la escalabil
 
 ## ●A pesar de que la solución es escalable, se observa una limitación en términos de sincronización entre las partes. ¿Qué estrategias o técnicas podrían implementarse para desacoplar las diferentes partes del sistema y mejorar su escalabilidad?
 
-#### Implementación de un sistema de mensajería o eventos:
-
-Introducir un sistema de mensajería o eventos como Apache Kafka, RabbitMQ o Amazon SQS.
-Cuando el cliente envía una solicitud al servidor para ejecutar una tarea, en lugar de procesarla de manera síncrona, el servidor publica un mensaje en una cola de mensajes.
-El "servicio tarea" se suscribe a esta cola y procesa los mensajes de manera asíncrona.
-Una vez que se completa la tarea, el "servicio tarea" puede publicar el resultado en otra cola de mensajes.
-El servidor puede entonces suscribirse a esta cola y enviar la respuesta al cliente.
-
 ##  ●	¿Cómo afectaría la implementación de un sistema de mensajería o eventos en la arquitectura para abordar la limitación de sincronización y mejorar la escalabilidad del sistema?
-
 
 La implementación de un sistema de mensajería o eventos en la arquitectura puede tener varios impactos significativos en la capacidad del sistema para abordar la limitación de sincronización y mejorar su escalabilidad:
 
