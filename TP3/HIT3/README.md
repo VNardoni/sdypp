@@ -7,3 +7,6 @@ Cuando ejecutas terraform destroy , Terraform marca los recursos para eliminarlo
 ### Explicar qué pasa cuando vuelvo a correr Terraform plan / apply
 
 ## Hacer un dibujo explicativo de lo sucedido.
+
+### 1 - Creamos las instancias
+![alt text](image.png)
