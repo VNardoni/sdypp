@@ -7,10 +7,6 @@ provider "google" {
 
 data "google_client_openid_userinfo" "me" {}
 
-resource "tls_private_key" "ssh_key" {
-  algorithm   = "RSA"
-  rsa_bits    = 4096
-}
 
 resource "google_compute_instance" "pruebavm" {
   count         = var.instancias
@@ -37,20 +33,7 @@ resource "google_compute_instance" "pruebavm" {
 
   metadata = {
     ssh-keys = "${split("@", data.google_client_openid_userinfo.me.email)[0]}:${tls_private_key.ssh_key.public_key_openssh}"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "wget -O ubuntu.iso https://releases.ubuntu.com/jammy/ubuntu-22.04.2-desktop-amd64.iso"
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = "${split("@", data.google_client_openid_userinfo.me.email)[0]}"
-      private_key = tls_private_key.ssh_key.private_key_pem
-      host        = self.network_interface[0].access_config[0].nat_ip
-    }
-  }
+  } 
 }
 
 resource "google_compute_firewall" "allow-ssh" {
@@ -89,6 +72,10 @@ resource "google_compute_firewall" "allow-https" {
   source_ranges = ["0.0.0.0/0"]
 }
 
+resource "tls_private_key" "ssh_key" {
+  algorithm   = "RSA"
+  rsa_bits    = 4096
+}
 resource "local_file" "ssh_private_key_pem" {
   content         = tls_private_key.ssh_key.private_key_pem
   filename        = ".ssh/google_compute_engine"
