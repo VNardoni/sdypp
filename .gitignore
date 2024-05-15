@@ -2,3 +2,4 @@ id_rsa*
 .terraform/
 terraform.tfstate.backup
 credentials
+*.pyc
