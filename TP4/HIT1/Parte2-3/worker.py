@@ -17,22 +17,34 @@ def queueConnect():
 
     channel.queue_declare(queue=queueName, durable=True)
 
+    # Funcion que se ejecuta cada vez que llega algo a la cola
+
     def callback(ch, method, properties, body):
         print(f" [x] Segmento recibido")
         message_body = body.decode() #  data = {"segment_id": segment_id, "segment": segment, lastID: "False"}
         segmentData = json.loads(message_body)
+
+        # Nos quedamos solamente con el segmento
         image = segmentData["segment"]
-         # Se convierte el array a imagen y luego nuevamente a array, sin esta conversion el filtro no funciona
+
+        # Convertimos el segmento en nparray para aplicar el filtro
         image = np.array(image)
         
         cv2.imwrite(f'imagen_parte{segmentData["segment_id"]}.jpg', image) 
         image = cv2.imread(f'imagen_parte{segmentData["segment_id"]}.jpg')
+
+        # Aplicamos filtro
         imagenSobel = sobel_filter(image)
+
         cv2.imwrite(f'imagen_parte{segmentData["segment_id"]}.jpg', imagenSobel)
         print(f" [x] Sobel aplicado al segmento {segmentData['segment_id']}")
+
+        # Convertimos en tolist para enviar
         segmentData["segment"] = imagenSobel.tolist()
+
         json_data = json.dumps(segmentData)
         response = requests.post(f'http://{IP}:5000/juntarSobels', data=json_data, headers=headers)
+        
         os.remove(f'imagen_parte{segmentData["segment_id"]}.jpg')
         ch.basic_ack(delivery_tag = method.delivery_tag)
     
@@ -41,6 +53,8 @@ def queueConnect():
     print(' [*] Esperando por segmentos')
     channel.start_consuming() 
 
+
+# Aplica el filtro al segmento
 
 def sobel_filter(image):
     # Convertir la imagen a escala de grises
