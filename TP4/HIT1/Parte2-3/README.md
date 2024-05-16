@@ -23,3 +23,17 @@ cálculo a otro proceso.
 [2] Los workers se conectaran a la cola para consumir segmentos de imagenes. Cuando la cola tenga segmentos para consumir cada worker aplicara el filtro sobel al semento y se lo enviara al servidor.
 
 [3] El servidor quedara esperando recibir la cantidad n de segmentos que envio. Cuando reciba la totalidad de segmentos ordenara y unificara cada uno de ellos para volver a formar la imagen.
+
+## Instrucciones
+
+1. Instalar librerias
+
+'''
+pip install opencv-python numpy
+'''
+
+2. Levantar la instancia de Rabbit MQ
+
+'''
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management
+'''
