@@ -19,16 +19,17 @@ def queueConnect():
 
     def callback(ch, method, properties, body):
         print(f" [x] Segmento recibido")
-        message_body = body.decode() #  data = {"segment_id": segment_id, "segment": segment}
+        message_body = body.decode() #  data = {"segment_id": segment_id, "segment": segment, lastID: "False"}
         segmentData = json.loads(message_body)
         image = segmentData["segment"]
+         # Se convierte el array a imagen y luego nuevamente a array, sin esta conversion el filtro no funciona
         image = np.array(image)
-        # Se convierte el array a imagen y luego nuevamente a array, sin esta conversion el filtro no funciona
+        
         cv2.imwrite(f'imagen_parte{segmentData["segment_id"]}.jpg', image) 
         image = cv2.imread(f'imagen_parte{segmentData["segment_id"]}.jpg')
         imagenSobel = sobel_filter(image)
         cv2.imwrite(f'imagen_parte{segmentData["segment_id"]}.jpg', imagenSobel)
-        print(f" [x] Sobel aplicado al segmento {segmentData["segment_id"]}")
+        print(f" [x] Sobel aplicado al segmento {segmentData['segment_id']}")
         segmentData["segment"] = imagenSobel.tolist()
         json_data = json.dumps(segmentData)
         response = requests.post(f'http://{IP}:5000/juntarSobels', data=json_data, headers=headers)

@@ -2,7 +2,7 @@ import socket
 import time 
 
 IP = '34.73.239.114'
-PORT = 8080
+PORT = 8120
 
 
 while True:

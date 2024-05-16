@@ -39,14 +39,6 @@ def get_remote_task():
     
     return jsonify(resultado_tarea)
 
-@app.route(rule="/status", methods=["GET"])
-def status():
-    data = {
-        "ESTADO DEL SERVICIO": "Funcionando"
-    }
-    print(data)
-    return data
-
 # ENDPOINT SERVER STATUS
 @app.route(rule="/status", methods=["GET"])
 def status():
