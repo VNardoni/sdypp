@@ -28,12 +28,25 @@ cálculo a otro proceso.
 
 1. Instalar librerias
 
-'''
+```
 pip install opencv-python numpy
-'''
+pip install pika 
+```
 
 2. Levantar la instancia de Rabbit MQ
 
-'''
+```
 docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management
-'''
+```
+
+3. Levantar los workers
+
+```
+python worker.py
+```
+
+4. Levantar el servidor
+
+```
+python server.py
+```
