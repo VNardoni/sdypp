@@ -4,3 +4,5 @@ terraform.tfstate.backup
 credentials
 *.pyc
 uploads/
+*.json
+*.hcl

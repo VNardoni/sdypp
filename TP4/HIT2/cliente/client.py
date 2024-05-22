@@ -5,6 +5,13 @@ file_path = 'imagen.jpg'
 
 with open(file_path, 'rb') as img:
     files = {'file': img}
-    response = requests.post(url, files=files)
+    data = {'n': 10}
+    response = requests.post(url, files=files, data=data)
 
-print(response.json())
+    if response.status_code == 200:
+        with open('imagen_sobel.jpg', 'wb') as f:
+            f.write(response.content)
+        print("Imagen recibida y guardada como 'imagen_sobel.jpg'")
+    else:
+        print(f"Error: {response.status_code}")
+        print(response.text)

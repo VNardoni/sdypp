@@ -28,7 +28,8 @@ resource "google_compute_backend_service" "rbs" {
 
 resource "google_compute_http_health_check" "default" {
   name               = var.hc_name
-  request_path       = "/"
+  request_path       = "/sobel"
+   port               = var.hc_port
   check_interval_sec = 1
   timeout_sec        = 1
 }

@@ -92,3 +92,17 @@ variable "urlmap_name" { default = "http-lb-url-map" }
 #
 # Firewall Rules
 variable "fwr_name" { default = "allow-http-https" }
+
+#Autoscaler
+
+variable "min_replicas" {
+  type    = string
+  default = 1
+}
+
+variable "max_replicas" {
+  type    = string
+  default = 10
+}
+
+

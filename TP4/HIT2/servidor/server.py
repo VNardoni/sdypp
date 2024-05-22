@@ -2,7 +2,7 @@ import json
 import os
 import cv2
 import numpy as np
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 import requests
 from werkzeug.utils import secure_filename
 
@@ -14,12 +14,11 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
-QUEUENAME = "cola_segmentos"
-N = 10
 PORT = 5000
-imagenes_a_filtrar = []
+segmentos_filtrados = []
 segment_id = 0
-lastID = False
+jsons = []
+
 
 def divide_image(image, n):
     height, width = image.shape[:2]
@@ -46,11 +45,13 @@ def combine_segments(segments, n):
         start_x = i * segment_width
         end_x = start_x + segment_width
         result[:, start_x:end_x] = segments[i] 
-    return result
+    #Convierto a imagen
+    cv2.imwrite('imagen_sobel.jpg', result)
     
 def armar_json(image_segments):
     global segment_id
-    global lastID
+    global jsons
+    lastID = False
     for segment in image_segments:
         segment_id += 1
         if segment_id == len(image_segments):
@@ -60,14 +61,18 @@ def armar_json(image_segments):
             "segment": segment.tolist(),
             "last_id": lastID
         }
-        json_data = json.dumps(data)
-    return json_data
+        jsons.append(data)
+    return jsons
 
 @app.route('/filtrarImagen', methods=['POST'])
 def filtrarImagen():
+    global segmentos_filtrados
+    global segment_id
+    url = "http://34.36.91.76:80/sobel"
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
     file = request.files['file']
+    N = request.form.get('n', type=int)
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
     if file:
@@ -78,11 +83,21 @@ def filtrarImagen():
         segmentos = divide_image(image, N)
         jsons = armar_json(segmentos)
         for segmento in jsons:
-            requests.post(url="http://34.36.91.76:80/", json=segmento)
-        # encolar(segmentos, QUEUENAME)
-        
-        return jsonify({"message": "File uploaded successfully", "file_path": file_path}), 200
-
+            response = requests.post(url=url, json=segmento)
+            if response.status_code == 200:
+                segmentData = response.json()
+                segmentos_filtrados.append(segmentData)
+                if segmentData["last_id"]:
+                    segmentos_filtrados = sorted(segmentos_filtrados, key=lambda x: x['segment_id']) # Ordeno los segmentos por ID
+                    segmentos = []
+                    for segmento in segmentos_filtrados: # Filtro por segmento
+                        s = np.array(segmento["segment"])
+                        segmentos.append(s) 
+                    combine_segments(segmentos, N)
+                    segmentos_filtrados = []
+                    jsons = []
+                    segment_id = 0
+        return send_file('imagen_sobel.jpg', mimetype='image/jpg')
 
 
 if __name__ == "__main__":
