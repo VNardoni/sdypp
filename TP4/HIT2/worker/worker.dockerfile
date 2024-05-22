@@ -5,7 +5,7 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Instala las dependencias necesarias directamente en el Dockerfile
-RUN pip install --no-cache-dir Flask==2.0.1 opencv-python-headless==4.5.3.56 numpy==1.21.2
+RUN pip install Flask opencv-python-headless numpy
 
 # Copia el contenido de la aplicación a la imagen del contenedor
 COPY . .

@@ -68,7 +68,7 @@ def armar_json(image_segments):
 def filtrarImagen():
     global segmentos_filtrados
     global segment_id
-    url = "http://34.36.91.76:80/sobel"
+    url = "http://34.117.190.231:80/sobel"
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
     file = request.files['file']
