@@ -1,48 +1,48 @@
 variable "region" {
-  type= string 
-  default     = "us-east1"  
+  type    = string
+  default = "us-east1"
 }
 
 variable "zone" {
-  type= string 
-  default     = "us-east1-b"  
+  type    = string
+  default = "us-east1-b"
 }
 
-variable "credentials_file_path"{
+variable "credentials_file_path" {
 
-type =string
-default ="credentials.json" 
+  type    = string
+  default = "credentials.json"
 
 }
 
-variable "project_id"{
+variable "project_id" {
 
-type= string 
-default="continual-air-416912"
+  type    = string
+  default = "continual-air-416912"
 
 }
 
 variable "instancias" {
-    type=number
-    default= 1
-    
-    }
+  type    = number
+  default = 1
+
+}
 
 variable "tipo_vm" {
-      type=string
-       default="e2-micro"
-      
-      }
-
-      variable "imagen"{
-      type=string
-      default= "ubuntu-os-cloud/ubuntu-2204-lts"
-        
-        
-        }
-    variable "metadata_startup_script" {
   type    = string
-    default = "../requeriments.sh"
+  default = "e2-micro"
+
+}
+
+variable "imagen" {
+  type    = string
+  default = "ubuntu-os-cloud/ubuntu-2204-lts"
+
+
+}
+variable "metadata_startup_script" {
+  type    = string
+  default = "init.sh"
 }
 
 #####Balancer####
@@ -97,12 +97,10 @@ variable "fwr_name" { default = "allow-http-https" }
 
 variable "min_replicas" {
   type    = string
-  default = 1
+  default = 2
 }
 
 variable "max_replicas" {
   type    = string
   default = 10
 }
-
-

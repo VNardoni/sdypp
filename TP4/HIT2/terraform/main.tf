@@ -7,33 +7,6 @@ provider "google" {
 
 data "google_client_openid_userinfo" "me" {}
 
-
-
-
-resource "google_compute_instance" "vm_instance" {
-  count         = var.instancias
-  name          = "vm-${count.index + 1}"
-  machine_type  = var.tipo_vm
-  zone          = var.zone
-
-  boot_disk {
-    initialize_params {
-      image = var.imagen
-    }
-  }
-
-  network_interface {
-    network = "default"
-    access_config {}
-  }
-
-  metadata_startup_script = file(var.metadata_startup_script)
-
-  metadata = {
-    ssh-keys = "${split("@", data.google_client_openid_userinfo.me.email)[0]}:${tls_private_key.ssh_key.public_key_openssh}"
-  } 
-}
-
 resource "google_compute_firewall" "allow-ssh" {
   name    = "allow-ssh"
   network = "default"
@@ -70,9 +43,22 @@ resource "google_compute_firewall" "allow-https" {
   source_ranges = ["0.0.0.0/0"]
 }
 
+resource "google_compute_firewall" "flask" {
+  name    = "permitir-flask"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["5000"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+}
+
+
 resource "tls_private_key" "ssh_key" {
-  algorithm   = "RSA"
-  rsa_bits    = 4096
+  algorithm = "RSA"
+  rsa_bits  = 4096
 }
 resource "local_file" "ssh_private_key_pem" {
   content         = tls_private_key.ssh_key.private_key_pem

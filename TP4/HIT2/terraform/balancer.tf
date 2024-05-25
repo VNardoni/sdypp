@@ -29,7 +29,7 @@ resource "google_compute_backend_service" "rbs" {
 resource "google_compute_http_health_check" "default" {
   name               = var.hc_name
   request_path       = "/sobel"
-   port               = var.hc_port
+  port               = var.hc_port
   check_interval_sec = 1
   timeout_sec        = 1
 }
@@ -38,7 +38,7 @@ resource "google_compute_region_instance_group_manager" "rmig" {
   name               = var.balancer_name
   base_instance_name = var.base_instance_name
   region             = var.region
-  target_size        = 2
+  target_size        = 1
 
   named_port {
     name = "http"
@@ -85,10 +85,9 @@ resource "google_compute_instance_template" "cit" {
   }
   metadata_startup_script = file(var.metadata_startup_script)
 
-
   metadata = {
     ssh-keys = "${split("@", data.google_client_openid_userinfo.me.email)[0]}:${tls_private_key.ssh_key.public_key_openssh}"
-  } 
+  }
 
   network_interface {
     network = var.network
@@ -106,9 +105,6 @@ resource "google_compute_instance_template" "cit" {
   lifecycle {
     create_before_destroy = true
   }
-
-
-
 
 }
 

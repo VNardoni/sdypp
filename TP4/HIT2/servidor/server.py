@@ -15,9 +15,7 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 PORT = 5000
-segmentos_filtrados = []
-segment_id = 0
-jsons = []
+URL = "http://34.117.190.231:80/sobel"
 
 
 def divide_image(image, n):
@@ -49,9 +47,9 @@ def combine_segments(segments, n):
     cv2.imwrite('imagen_sobel.jpg', result)
     
 def armar_json(image_segments):
-    global segment_id
-    global jsons
     lastID = False
+    jsons = []
+    segment_id = 0
     for segment in image_segments:
         segment_id += 1
         if segment_id == len(image_segments):
@@ -66,9 +64,7 @@ def armar_json(image_segments):
 
 @app.route('/filtrarImagen', methods=['POST'])
 def filtrarImagen():
-    global segmentos_filtrados
-    global segment_id
-    url = "http://34.117.190.231:80/sobel"
+    segmentos_filtrados = []
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
     file = request.files['file']
@@ -83,20 +79,17 @@ def filtrarImagen():
         segmentos = divide_image(image, N)
         jsons = armar_json(segmentos)
         for segmento in jsons:
-            response = requests.post(url=url, json=segmento)
+            response = requests.post(URL, json=segmento)
             if response.status_code == 200:
                 segmentData = response.json()
                 segmentos_filtrados.append(segmentData)
                 if segmentData["last_id"]:
-                    segmentos_filtrados = sorted(segmentos_filtrados, key=lambda x: x['segment_id']) # Ordeno los segmentos por ID
+                    segmentos_ordenados = sorted(segmentos_filtrados, key=lambda x: x['segment_id']) # Ordeno los segmentos por ID
                     segmentos = []
-                    for segmento in segmentos_filtrados: # Filtro por segmento
+                    for segmento in segmentos_ordenados: # Filtro por segmento
                         s = np.array(segmento["segment"])
                         segmentos.append(s) 
                     combine_segments(segmentos, N)
-                    segmentos_filtrados = []
-                    jsons = []
-                    segment_id = 0
         return send_file('imagen_sobel.jpg', mimetype='image/jpg')
 
 
