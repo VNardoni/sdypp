@@ -36,13 +36,11 @@ variable "tipo_vm" {
 
 variable "imagen" {
   type    = string
-  default = "ubuntu-os-cloud/ubuntu-2204-lts"
-
-
+  default = "worker-image"
 }
 variable "metadata_startup_script" {
   type    = string
-  default = "init.sh"
+  default = "../requeriments.sh"
 }
 
 #####Balancer####
@@ -103,4 +101,16 @@ variable "min_replicas" {
 variable "max_replicas" {
   type    = string
   default = 10
+}
+
+###Rabbit 
+
+variable "imagen_rabbit" {
+  type    = string
+  default = "rabbitimage"
+}
+
+variable "startup_rabbit" {
+  type    = string
+  default = "rabbit.sh"
 }

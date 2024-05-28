@@ -15,7 +15,7 @@ if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 PORT = 5000
-URL = "http://34.117.190.231:80/sobel"
+jsons = []
 
 
 def divide_image(image, n):
@@ -65,6 +65,7 @@ def armar_json(image_segments):
 @app.route('/filtrarImagen', methods=['POST'])
 def filtrarImagen():
     segmentos_filtrados = []
+    url = "http://34.74.195.104:5000/sobel"
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
     file = request.files['file']
@@ -79,7 +80,7 @@ def filtrarImagen():
         segmentos = divide_image(image, N)
         jsons = armar_json(segmentos)
         for segmento in jsons:
-            response = requests.post(URL, json=segmento)
+            response = requests.post(url=url, json=segmento)
             if response.status_code == 200:
                 segmentData = response.json()
                 segmentos_filtrados.append(segmentData)
