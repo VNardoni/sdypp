@@ -71,7 +71,7 @@ def encolar(idImagen, listaFragmentos):
     for fragmento in listaFragmentos:
         fragmentID += 1
         data = {
-            "idImagen": idImagen,
+            "idImage": idImagen,
             "idFragment": fragmentID,
             "fragment": fragmento.tolist(),
         }

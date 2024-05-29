@@ -82,8 +82,7 @@ def queueConnect():
         message_body = body.decode() #  data = {ID IMAGEN | ID FRAGMENTO | FRAGMENTO}
         fragmentData = json.loads(message_body)
 
-        # Nos quedamos solamente con el segmento
-        
+        idFragment = fragmentData["idFragment"]
         image = fragmentData["fragment"]
         idImage = fragmentData["idImage"]
 
@@ -113,9 +112,12 @@ def queueConnect():
 
         # OBTENEMOS TOTAL DE FRAGMENTOS EN EL QUE FUE DIVIDIA
          
-        getCantidadTotalFragmentos(cliente, idImage)
+        totalFragmentos = getCantidadTotalFragmentos(cliente, idImage)
 
+        # COMPARAR SI EL FRAGMENTO RECIBIDO = FRAGMENTOS TOTALES
 
+        if idFragment == totalFragmentos:
+            cliente.hset(idImage, 'Estado', 'Completada') # (HASH, CAMPO, VALOR)
 
 
         ch.basic_ack(delivery_tag = method.delivery_tag)
@@ -124,8 +126,6 @@ def queueConnect():
 
 
 
-# OBTENER LA CANTIDAD DE FRAGMENTOS TOTALES EN QUE DE DIVIDIOO EL IDIMAGEN
-# COMPARAR SI EL FRAGMENTO RECIBIDO = FRAGMENTOS TOTALES
-    # IF = ENTONCES CAMBIAR EL ESTADO DEL REDIS
-    # SINO SEGUIR
+
+
 # ENVIAR EL FRAGMENTO AL BUCKET
