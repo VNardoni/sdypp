@@ -61,6 +61,32 @@ network_interface {
 
 }
 
+resource "google_compute_instance" "redis_instance" {
+  count        = 1
+  name         = "redis"
+  machine_type = var.tipo_vm
+  zone         = var.zone
+  metadata_startup_script = file(var.startup_redis)
+
+  boot_disk {
+    initialize_params {
+      image = var.imagen_redis
+    }
+  }
+
+network_interface {
+    network = "default"
+    access_config {}
+  }
+
+  
+ 
+  metadata = {
+    ssh-keys = "${split("@", data.google_client_openid_userinfo.me.email)[0]}:${tls_private_key.ssh_key.public_key_openssh}"
+  }
+
+
+}
 
 resource "google_compute_firewall" "allow-ssh" {
   name    = "allow-ssh"
@@ -111,6 +137,31 @@ resource "local_file" "ssh_private_key_pem" {
   filename        = ".ssh/google_compute_engine"
   file_permission = "0600"
 }
+
+
+resource "google_compute_firewall" "allow-rabbitmq1" {
+  name    = "allow-rabbitmq1"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["5672", "15672"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+}
+resource "google_compute_firewall" "allow-redis" {
+  name    = "allow-redis"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["6379", "8001"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+}
+
 
 
 resource "google_compute_firewall" "flask" {

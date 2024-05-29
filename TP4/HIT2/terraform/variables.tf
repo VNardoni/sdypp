@@ -107,10 +107,22 @@ variable "max_replicas" {
 
 variable "imagen_rabbit" {
   type    = string
-  default = "rabbitimage"
+  default = "rabbitimage2"
 }
 
 variable "startup_rabbit" {
   type    = string
   default = "rabbit.sh"
+}
+
+##Redis
+
+variable "imagen_redis" {
+  type    = string
+  default = "redis-image"
+}
+
+variable "startup_redis" {
+  type    = string
+  default = "redis.sh"
 }
