@@ -3,8 +3,7 @@
 sudo apt update
 sudo apt install python3
 sudo apt install python3-pip -y
-pip install opencv-python numpy
-# pip install pika
+pip install opencv-python numpy pika google-cloud-storage
 pip install Flask
 
 

@@ -5,6 +5,7 @@ import pika
 import redis
 import uuid
 import json
+from google.cloud import storage
 
 queueName   = 'colaSobel'
 hostRabbit  = '35.196.254.97'
@@ -13,6 +14,7 @@ portRedis   = '6379'
 cantidadFragmentos = 10
 url = "http://34.74.70.187:5000/sobel"
 PORT_HOST = 5000
+bucketName = "bucket_imagenes_sdypp"
 
 
 app = Flask(__name__)
@@ -96,6 +98,17 @@ def redisConnect():
     client = redis.Redis(host = hostRedis, port = portRedis, db = 0)
     return client
 
+def descargar_imagen(bucket_name, nombre_remoto, destino_local):
+    # Crear el cliente de Google Cloud Storage
+    storage_client = storage.Client()
+    # Obtener el bucket
+    bucket = storage_client.bucket(bucket_name)
+    # Obtener el blob (archivo) especificado por nombre_remoto
+    blob = bucket.blob(nombre_remoto)
+    # Descargar el blob a un archivo local
+    blob.download_to_filename(destino_local)
+    print(f"Imagen {nombre_remoto} descargada a {destino_local}")
+
 
 @app.route('/sobel', methods=['POST'])
 def recibirImagen():
@@ -142,7 +155,35 @@ def recibirImagen():
 
     return jsonify({'OK': "Imagen recibida", 'ID': idImagen}), 200
 
-
+# Endpoint que recibe ID de la imagen y recupera todos los fragmentos del bucket y las junta si ya esta lista
+@app.route("/getImagenFiltrada", methods=["POST"])
+def getImagenFiltrada():
+    data = request.json
+    idImagen = data["idImagen"]
+    cliente = redisConnect()
+    #Recuperamos el idImagen de redis
+    resultado = cliente.hget(idImagen)
+    if resultado:
+        resultado = resultado.decode("utf-8")
+        if resultado.get("Estado") == "PENDIENTE":
+            return "La imagen no esta lista", 202
+        else:
+            nroFragmentos = resultado.get("FragmentosTotales")
+            fragmentos = []
+            #Cada fragmento se representa por "{idImagen}_{idFragmento}.jpg"
+            for i in range(1 , nroFragmentos + 1):
+                nombre_blob = (f'{idImagen}_{i}')
+                #Descargo del bucket
+                descargar_imagen(bucketName, nombre_blob, nombre_blob)
+                #Convierto imagen a array
+                fragmento = cv2.imread(nombre_blob)
+                #Guardo en lista con todos los fragmentos para combinar
+                fragmentos.append(fragmento)
+            combine_segments(fragmentos, nroFragmentos)
+            return send_file('imagen_sobel.jpg', mimetype='image/jpg')
+    else:
+        return "No se encontro la imagen", 404
+            
 
 # @app.route('/filtrarImagen', methods=['POST'])
 # def filtrarImagen():

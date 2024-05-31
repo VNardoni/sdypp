@@ -22,10 +22,6 @@
         "type": "shell",
         "inline": [
           "sudo apt-get update",
-          "sudo apt install python3",
-          "sudo apt install python3-pip -y",
-          "sudo pip install Flask",
-          "sudo pip install opencv-python numpy",
           "sudo apt install docker.io -y",
           "sudo docker pull lucasrueda01/worker-app",
           "sudo apt install -y systemd",
