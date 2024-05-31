@@ -5,7 +5,7 @@ variable "region" {
 
 variable "zone" {
   type    = string
-  default = "us-east1-b"
+  default = "us-east1-c"
 }
 
 variable "credentials_file_path" {
@@ -36,7 +36,7 @@ variable "tipo_vm" {
 
 variable "imagen" {
   type    = string
-  default = "worker-image"
+  default = "worker-image-sdypp2024"
 }
 variable "metadata_startup_script" {
   type    = string
@@ -95,7 +95,7 @@ variable "fwr_name" { default = "allow-http-https" }
 
 variable "min_replicas" {
   type    = string
-  default = 2
+  default = 1
 }
 
 variable "max_replicas" {
@@ -107,7 +107,7 @@ variable "max_replicas" {
 
 variable "imagen_rabbit" {
   type    = string
-  default = "rabbitimage2"
+  default = "rabbitimage2024"
 }
 
 variable "startup_rabbit" {

@@ -8,10 +8,10 @@ import json
 
 queueName   = 'colaSobel'
 hostRabbit  = '35.196.254.97'
-hostRedis   = '34.148.28.245'
+hostRedis   = '34.23.57.153'
 portRedis   = '6379'
 cantidadFragmentos = 10
-url = "http://34.74.195.104:5000/sobel"
+url = "http://34.74.70.187:5000/sobel"
 PORT_HOST = 5000
 
 

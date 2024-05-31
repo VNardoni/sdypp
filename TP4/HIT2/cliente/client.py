@@ -9,7 +9,7 @@ with open(file_path, 'rb') as img:
     data = {'n': 10}
     response = requests.post(url, files=files, data=data)
     
-    response = request.json()
+    #response = request.json()
     
 
     if response.status_code == 200:
