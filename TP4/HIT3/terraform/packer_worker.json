@@ -1,0 +1,54 @@
+{
+    "variables": {
+      "gcloud_account_json": "credentials.json",
+      "gcloud_project_id": "continual-air-416912"
+    },
+    "builders": [
+      {
+        "type": "googlecompute",
+        "account_file": "{{user `gcloud_account_json`}}",
+        "project_id": "{{user `gcloud_project_id`}}",
+        "ssh_username": "ubuntu",
+        "source_image_family": "ubuntu-2004-lts",
+        "image_name": "worker-image-sdypp2024",
+        "zone": "us-east1-c",
+        "machine_type": "n1-standard-2",
+        "disk_size": "20",
+        "on_host_maintenance": "TERMINATE"
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "shell",
+        "inline": [
+          "sudo apt-get update",
+          "sudo apt install python3",
+          "sudo apt install python3-pip -y",
+          "sudo pip install Flask",
+          "sudo pip install opencv-python numpy",
+          "sudo apt install docker.io -y",
+          "sudo docker pull lucasrueda01/worker-app",
+          "sudo apt install -y systemd",
+          "sudo systemctl restart docker",
+          "sleep 30",
+          "attempts=0",
+          "max_attempts=3",
+          "while [ $attempts -lt $max_attempts ]; do",
+          "  sudo docker run --rm --name servidor_sobel -d -p 5000:5000 lucasrueda01/worker-app",
+          "  sleep 5",
+          "  curl http://localhost:5000 && break", 
+          "  echo 'Error: El contenedor no se inició correctamente. Intento número $((attempts+1)).'",
+          "  attempts=$((attempts+1))",
+          "  sleep 10",
+          "done",
+          "if [ $attempts -eq $max_attempts ]; then",
+          "  echo 'Error: No se pudo iniciar el contenedor después de $max_attempts intentos.'",
+          "  exit 1",
+          "fi",
+          "sudo docker ps -a",
+          "sudo docker logs servidor_sobel"
+        ]
+      }
+    ]
+  }
+  
