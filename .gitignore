@@ -1,12 +1,10 @@
 id_rsa*
 .terraform/
-
 terraform.tfstate.backup
-*credentials.json
 *.pyc
 uploads/
 *.hcl
-terraform.tfstate
 .vscode/
 .github/
 test.py
+.ssh/
