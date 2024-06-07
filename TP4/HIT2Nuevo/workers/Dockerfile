@@ -7,6 +7,5 @@ WORKDIR /app
 COPY . .
 COPY credentials.json /app/credentials.json
 RUN pip install -r requirements.txt
-EXPOSE 5000
 ENV GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
-CMD ["python", "server.py"]
+CMD ["python", "worker.py"]

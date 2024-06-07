@@ -29,13 +29,3 @@ services:
       - "15672:15672"
     networks:
       - hit2-network
-
-  nginx:
-    image: "nginx:alpine"
-    container_name: nginx_service
-    environment:
-      VARIABLE: 'Esto es una variable'
-    ports:
-      - 8080:80
-    networks:
-      - hit2-network

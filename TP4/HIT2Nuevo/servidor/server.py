@@ -15,6 +15,7 @@ cantidadFragmentos = 10
 url = "http://34.74.70.187:5000/"
 PORT_HOST = 5000
 bucketName = "bucket_imagenes_sdypp"
+credentialPath = "credentials.json"
 
 
 app = Flask(__name__)
@@ -46,7 +47,7 @@ def combine_segments(segments, n):
     result_height = segment_height
     result_width = segment_width * n
     # Crear la imagen resultante inicializando una matriz de ceros con el shape calculado
-    result = np.zeros((result_height, result_width), dtype=np.uint8)
+    result = np.zeros((result_height, result_width, 3), dtype=np.uint8)  # Considera 3 canales para imagen a color
     # Combinar los segmentos en la imagen resultante
     for i in range(n):
         start_x = i * segment_width
@@ -88,8 +89,6 @@ def encolar(idImagen, listaFragmentos):
     print("-----------------------")
     print(f"[*] Todos los fragmentos de la imagen {idImagen} se enviaron")
     
-    
-        
 
 def generarID():
     return str(uuid.uuid4())
@@ -98,11 +97,13 @@ def redisConnect():
     client = redis.Redis(host = hostRedis, port = portRedis, db = 0)
     return client
 
-def descargar_imagen(bucket_name, nombre_remoto, destino_local):
-    # Crear el cliente de Google Cloud Storage
-    storage_client = storage.Client()
-    # Obtener el bucket
-    bucket = storage_client.bucket(bucket_name)
+def bucketConnect(bucketName, credentialPath):
+    bucketClient = storage.Client.from_service_account_json(credentialPath)
+    bucket = bucketClient.bucket(bucketName)
+    return bucket
+
+
+def descargar_imagen(bucket, nombre_remoto, destino_local):
     # Obtener el blob (archivo) especificado por nombre_remoto
     blob = bucket.blob(nombre_remoto)
     # Descargar el blob a un archivo local
@@ -138,11 +139,7 @@ def recibirImagen():
     # ASIGNARLE ID A LA IMAGEN
     idImagen = generarID()
 
-    # SPLITEAR LA IMAGEN
-    listaFragmentos = splitImage(image, cantidadFragmentos)
-    encolar(idImagen, listaFragmentos)
-
-    # CONEXION A REDIS
+     # CONEXION A REDIS
     cliente = redisConnect()
     
     # ENVIAR AL REDIS ID IMAGEN | N (CANTIDAD DE FRAGMENTOS QUE DIVIDE) | ESTADO
@@ -151,32 +148,47 @@ def recibirImagen():
         'Estado': 'PENDIENTE'
     })
 
-    return jsonify({'OK': "Imagen recibida", 'ID': idImagen}), 200
+    # SPLITEAR LA IMAGEN
+    listaFragmentos = splitImage(image, cantidadFragmentos)
+    encolar(idImagen, listaFragmentos)
+
+   
+
+    return jsonify({'[IMAGEN RECIBIDA] - ID: ': idImagen }), 200
 
 # Endpoint que recibe ID de la imagen y recupera todos los fragmentos del bucket y las junta si ya esta lista
-@app.route("/getImagenFiltrada", methods=["POST"])
-def getImagenFiltrada():
-    data = request.json
-    idImagen = data["idImagen"]
+@app.route("/getImagen/<id>", methods=["GET"])
+def getImagenFiltrada(id):
     cliente = redisConnect()
+    bucket = bucketConnect(bucketName, credentialPath)
+
     #Recuperamos el idImagen de redis
-    resultado = cliente.hget(idImagen)
-    if resultado:
-        resultado = resultado.decode("utf-8")
-        if resultado.get("Estado") == "PENDIENTE":
+    resultado = cliente.hget(id, 'Estado')
+    resultado = resultado.decode("utf-8")
+    if resultado :
+        if resultado == "PENDIENTE":
             return "La imagen no esta lista", 202
-        else:
-            nroFragmentos = resultado.get("FragmentosTotales")
+        else: 
+            nroFragmentos = cliente.hget(id, "FragmentosTotales")
+            nroFragmentos = int(nroFragmentos)
             fragmentos = []
+
             #Cada fragmento se representa por "{idImagen}_{idFragmento}.jpg"
+
             for i in range(1 , nroFragmentos + 1):
-                nombre_blob = (f'{idImagen}_{i}')
+                nombre_blob = (f'{id}_{i}')
+
                 #Descargo del bucket
-                descargar_imagen(bucketName, nombre_blob, nombre_blob)
+                descargar_imagen(bucket, nombre_blob, nombre_blob)
+
                 #Convierto imagen a array
+                
                 fragmento = cv2.imread(nombre_blob)
+                fragmento = np.array(fragmento)
+
                 #Guardo en lista con todos los fragmentos para combinar
                 fragmentos.append(fragmento)
+
             combine_segments(fragmentos, nroFragmentos)
             return send_file('imagen_sobel.jpg', mimetype='image/jpg')
     else:
