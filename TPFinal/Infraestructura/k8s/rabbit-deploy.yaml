@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: rabbitmq
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: rabbitmq
@@ -31,7 +31,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rabbitmq
+  name: rabbitmq-integrador
 spec:
   type: LoadBalancer
   ports:
@@ -42,4 +42,4 @@ spec:
     targetPort: 15672
     name: management
   selector:
-    app: rabbitmq
+    app: rabbitmq-integrador
