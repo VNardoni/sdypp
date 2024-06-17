@@ -1,0 +1,298 @@
+import hashlib
+import json
+import random
+import threading
+from flask import Flask, jsonify, request
+import pika
+import redis
+import time
+
+app = Flask(__name__)
+
+# VARIABLES
+
+hostRedis = 'localhost'
+portRedis = 6379
+hostRabbit = 'localhost'
+queueNameTx = 'QueueTransactions'
+exchangeBlock = 'ExchangeBlock'
+timer = 15
+datosBucket = []
+
+
+# Conexion a Redis
+
+def redisConnect():
+    client = redis.Redis(host = hostRedis, port = portRedis, db = 0)
+    print('[x] Conectado a Redis')
+    return client
+
+# Conexion a Rabbit-MQ para encolar Transacciones
+
+def queueConnect():
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=hostRabbit))
+    channel = connection.channel()
+    channel.queue_declare(queue=queueNameTx)
+    channel.exchange_declare(exchange=exchangeBlock, exchange_type='topic', durable=True)
+    print(f'[x] Conectado a Rabbit-MQ')
+    return connection, channel
+
+def encolar(transaction):
+
+    jsonTransaction = json.dumps(transaction)
+    channel.basic_publish(exchange='',
+                            routing_key=queueNameTx,
+                            body=jsonTransaction)
+    print(f'[x] Se enconlo en {queueNameTx}: {transaction}')   
+
+
+
+# Validar que lo que me haya llegado es una transaccion
+# {'origen': 'idOrigen'
+#  'destino': 'idDestino'
+#  'monto': 'monto'}
+
+def validarTransaction(transaction): 
+    if transaction['origen'] and transaction['destino'] and transaction['monto']:
+        return True
+    else: 
+        return False
+    
+def calculateHash(data):
+    hash_sha256 = hashlib.sha256()
+    hash_sha256.update(data.encode('utf-8'))
+    return hash_sha256.hexdigest()
+
+# Metodos Redis
+
+def getUltimoBlock():
+
+    ultimoBlock = client.lindex('blockchain',0)
+    if ultimoBlock:
+        return json.loads(ultimoBlock)
+    return None 
+
+def existBlock(id):
+    allBlocks = client.lrange('blockchain',0,-1)
+
+    for block in allBlocks:
+            msg = json.loads(block)
+            if 'blockId' in msg and msg['blockId'] == id:
+                return True
+            return False
+    
+def postBlock(block):
+    blockJson = json.dumps(block)
+    client.lpush('blockchain', blockJson)
+
+
+
+@app.route('/transaction', methods=['POST'])
+def addTransaction():
+
+    transaction = request.json
+
+    try:
+        if validarTransaction(transaction):
+            print('OK')
+            encolar(transaction)    # Encolar
+            
+
+    except Exception as e:
+        print("[x] La transaccion no es valida")
+        print(e)
+        return 'Transaccion no recibida', 400
+
+    return 'Transaccion Recibida', 200
+
+@app.route('/status', methods=['GET'])
+def status():
+    mensaje = jsonify({'status': 'OK'})
+    return mensaje
+
+@app.route('/solved_task', methods=['POST'])
+def receive_solved_task():
+    
+    newBlock = {
+        'blockId': "None",
+        'hash': "None",
+        'hashPrevio': "None",
+        'nonce': "None",
+        'prefijo': "None",
+        'transactions': "None",
+        'timestamp': "None",
+        'blockchainContent': "None",
+        'baseStringChain' : "None"
+    }
+
+    data = request.get_json()
+
+    global datosBucket
+    
+    # Procesa los datos recibidos
+    if data:
+        print(f"Received data: {data}")
+
+        # Simulo buscarlo en el Bucket - Remplazar cuando implementemos bucket
+        for block in datosBucket:
+            if block['blockId'] == data['blockId']:
+                print(f"Encontre bloque: {block['blockId']}")
+                print('')
+                break
+
+        dataHash = data['result'] + block['baseStringChain'] + block['blockchainContent']
+        hashResult = calculateHash(dataHash)
+        timestamp = time.time()
+        print(f"[x] Hash recibido: {data['hash']}")
+        print(f"[x] Hash calculado: {hashResult}")
+        print('')
+
+        if hashResult == data['hash']:
+            print('[x] Los Hash son iguales » Data valida.')
+
+            # Validar si existe el bloque
+            if existBlock(block['blockId']):
+                print('[x] Existe Bloque » Descartar')
+                return jsonify({'message': 'El bloque ya fue resuelto » DESCARTADO'}), 200
+            else:
+                print('[x] No existe bloque » Proceder')
+                print('')
+
+                # Calcular blockchainContent
+                blockchainData = block['baseStringChain'] + data['hash'] # H('A2F8' + Hash del worker)  
+                blockchainContent = calculateHash(blockchainData)
+                newBlock['blockchainContent'] = blockchainContent
+                print(f"[x] Blockchain Content: {blockchainContent}")
+
+                # Obtener ultimo bloque
+
+                try:
+                    ultimoBloque = getUltimoBlock()
+                except:
+                    ultimoBloque = 'Null'
+                
+                if ultimoBloque != None:
+                    print('[x] Hay bloque anterior » Conectar bloques')
+
+                    # Conectar los bloques
+                    print(f"[x] Hash del ultimo bloque: {ultimoBloque['hash']}")
+                    newBlock['hashPrevio'] = ultimoBloque['hash']
+
+                else:
+                    print('[x] No hay bloque anterior » Bloque genesis')
+                    newBlock['hashPrevio'] = 'None'
+
+            # Armamos bloque
+
+            newBlock['blockId'] = data['blockId']
+            newBlock['hash'] = data['hash']
+            newBlock['transactions'] = block['transactions']
+            newBlock['prefijo'] = block['prefijo']
+            newBlock['baseStringChain'] = block['baseStringChain']
+            newBlock['timestamp'] = timestamp
+            newBlock['nonce'] = data['result']
+
+            postBlock(newBlock)
+            print('[x] Bloque validado » Agregado a la blockchain')
+
+            return jsonify({'message': 'Bloque validado » Agregado a la blockchain'}), 201
+
+        else:
+            print('[x] Los Hash son distintos » Dato invalido')
+            return jsonify({'message': 'El Hash recibido es invalido » DESCARTADO'}), 200
+        # Aquí puedes agregar la lógica de procesamiento de datos
+
+        # Respuesta exitosa
+        return jsonify({'status': 'success', 'message': 'Data received'}), 200
+    else:
+        # Si no se reciben datos, responde con un error
+        return jsonify({'status': 'error', 'message': 'No data received'}), 400
+
+
+def proccesPackages():
+
+    # Consumir Mensaje de la Cola
+    while True:
+        method_frame, header_frame, body = channel.basic_get(queue=queueNameTx)
+        if method_frame:
+            print(f" [x] Desencole:  {body.decode()}")
+            # Acknowledge the message
+            channel.basic_ack(method_frame.delivery_tag)
+        else:
+            print(" [x] No hay mas mensajes. Los proximos se sacaran en 60 segundos.")
+            break
+        time.sleep(10)  # Esperar un segundo antes de intentar de nuevo
+    
+def probando():
+    while True:
+        contadorTransaction = 0
+        print('[x] Buscando Transsaciones')
+        print('---------------------------')
+        print('')
+        listaTransactions = []
+        for _ in range(20):
+            method_frame, header_frame, body = channel.basic_get(queue=queueNameTx)
+            if method_frame:
+                contadorTransaction = contadorTransaction + 1
+                listaTransactions.append(json.loads(body))
+                print(f"[x] Desencole una transaccion")
+                print(f'[x] Transaccion: {body}')
+                print('')
+                channel.basic_ack(method_frame.delivery_tag)
+            else:
+                print('[x] No hay transsaciones')
+                print(f'[x] Cantidad de trasacciones desencoladas: {contadorTransaction}')
+                print('')
+                break
+
+        if listaTransactions: # Armar bloque
+            print('')
+
+            maxRandom = 99999999
+            blockId = str(random.randint(0,maxRandom))
+
+            block = {
+                "blockId": blockId,
+                "transactions": listaTransactions,
+                "prefijo": '000',
+                "baseStringChain": "A3F8",
+                "blockchainContent": getUltimoBlock()['blockchainContent'] if getUltimoBlock() else "[]",
+                "numMaxRandom": maxRandom 
+            }
+
+            print(f"blockchainContent: {block['blockchainContent']}")
+            # Simulamos el bucket
+
+            global datosBucket 
+            datosBucket.append(block)
+
+            # Publicar el bloque en el Topic
+            
+            channel.basic_publish(exchange= exchangeBlock, routing_key='blocks', body=json.dumps(block))
+            print(f'[x] Bloque {blockId} enviado')
+            print('')
+
+        
+        time.sleep(timer)
+
+
+
+# Conectacmos a la cola
+     
+connection, channel = queueConnect()
+client = redisConnect()
+
+
+# CADA 60 SEGUNDOS »
+#   - Agarrar de la Cola las transacciones
+#   - Armar un bloque
+#   - Enviarlo al topíco
+
+
+
+status_thread = threading.Thread(target=probando)
+status_thread.start()
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')
+

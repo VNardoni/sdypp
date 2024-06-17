@@ -8,8 +8,8 @@ from google.cloud import storage
 
 
 queueName = 'colaSobel'
-hostRabbit  = '35.196.254.97'
-hostRedis   = '34.23.57.153'
+hostRabbit  = 'localhost'
+hostRedis   = 'localhost'
 portRedis   = '6379'
 bucketName = "bucket_imagenes_sdypp"
 
@@ -72,6 +72,9 @@ def subir_imagen(bucket_name, imagen_local, nombre_remoto):
     # Subir la imagen al blob
     blob.upload_from_filename(imagen_local)
     print(f"Imagen {imagen_local} subida a {bucket_name}/{nombre_remoto}")
+
+def bucketConnect(bucketName):
+
 
 
 # Funcion que se ejecuta cada vez que llega algo a la cola

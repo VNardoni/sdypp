@@ -8,8 +8,8 @@ from google.cloud import storage
 
 
 queueName = 'colaSobel'
-hostRabbit  = 'localhost'
-hostRedis   = 'localhost'
+hostRabbit  = 'rabbit-mq'
+hostRedis   = 'redis'
 portRedis   = '6379'
 bucketName = "bucket_imagenes_sdypp"
 credentialPath = "credentials.json"
