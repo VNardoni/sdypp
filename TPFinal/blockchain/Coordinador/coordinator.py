@@ -6,6 +6,7 @@ from flask import Flask, jsonify, request
 import pika
 import redis
 import time
+from google.cloud import storage
 
 app = Flask(__name__)
 
@@ -18,6 +19,8 @@ queueNameTx = 'QueueTransactions'
 exchangeBlock = 'ExchangeBlock'
 timer = 15
 datosBucket = []
+bucketName = 'bucket_integrador'
+credentialPath = 'credentials.json'
 
 
 # Conexion a Redis
@@ -36,6 +39,11 @@ def queueConnect():
     channel.exchange_declare(exchange=exchangeBlock, exchange_type='topic', durable=True)
     print(f'[x] Conectado a Rabbit-MQ')
     return connection, channel
+
+def bucketConnect(bucketName, credentialPath):
+    bucketClient = storage.Client.from_service_account_json(credentialPath)
+    bucket = bucketClient.bucket(bucketName)
+    return bucket
 
 def encolar(transaction):
 
@@ -63,7 +71,7 @@ def calculateHash(data):
     hash_sha256.update(data.encode('utf-8'))
     return hash_sha256.hexdigest()
 
-# Metodos Redis
+# --- Metodos Redis --- #
 
 def getUltimoBlock():
 
@@ -84,6 +92,43 @@ def existBlock(id):
 def postBlock(block):
     blockJson = json.dumps(block)
     client.lpush('blockchain', blockJson)
+
+# --- TERMINAN METODOS REDIS --- #
+
+
+def subirBlock(bucket,block): #bucket, block
+
+    blockId = block['blockId']
+    jsonBlock = json.dumps(block)
+
+    fileName =  (f'block_{blockId}.json')
+
+    # Crear un blob (objeto en el bucket) con el nombre deseado
+    blob = bucket.blob(fileName)
+    
+    # Subir la imagen al blob
+    blob.upload_from_string(jsonBlock, content_type='application/json')
+
+    print(f"[x] El bloque {blockId} fue subido al bucket con el nombre de {fileName}")
+
+def descargarBlock(bucket, blockId):
+    
+    # Nombre del archivo en bucket
+    fileName =  (f'block_{blockId}.json')
+
+    # Obtener el blob (archivo) del bucket
+    blob = bucket.blob(fileName)
+
+    # Descargamos del bucket
+    jsonBlock = blob.download_as_text()
+
+    # Serializamos
+
+    block = json.loads(jsonBlock)
+
+  
+    print(f"[x] {blockId} Descaargo del Bucket")
+    return block
 
 
 
@@ -132,14 +177,10 @@ def receive_solved_task():
     # Procesa los datos recibidos
     if data:
         print(f"Received data: {data}")
-
-        # Simulo buscarlo en el Bucket - Remplazar cuando implementemos bucket
-        for block in datosBucket:
-            if block['blockId'] == data['blockId']:
-                print(f"Encontre bloque: {block['blockId']}")
-                print('')
-                break
-
+        
+        bucket=bucketConnect(bucketName, credentialPath)
+        block = descargarBlock(bucket,data['blockId'])
+       
         dataHash = data['result'] + block['baseStringChain'] + block['blockchainContent']
         hashResult = calculateHash(dataHash)
         timestamp = time.time()
@@ -264,7 +305,13 @@ def probando():
             # Simulamos el bucket
 
             global datosBucket 
+       
             datosBucket.append(block)
+
+            # Me conecto al bucket
+
+            bucket = bucketConnect(bucketName, credentialPath)
+            subirBlock(bucket, block)
 
             # Publicar el bloque en el Topic
             
@@ -281,14 +328,6 @@ def probando():
      
 connection, channel = queueConnect()
 client = redisConnect()
-
-
-# CADA 60 SEGUNDOS »
-#   - Agarrar de la Cola las transacciones
-#   - Armar un bloque
-#   - Enviarlo al topíco
-
-
 
 status_thread = threading.Thread(target=probando)
 status_thread.start()
