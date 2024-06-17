@@ -6,5 +6,4 @@ uploads/
 *.hcl
 .vscode/
 .github/
-test.py
 .ssh/
