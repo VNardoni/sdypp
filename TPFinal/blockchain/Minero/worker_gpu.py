@@ -1,38 +1,45 @@
+import time
 import pika
 import requests
-from ..Minero import minero_gpu
 import json
-import time
+import minero_gpu
 
-#Enviar el resultado al coordinador para verificar que el resultado es correcto
+# Enviar el resultado al coordinador para verificar que el resultado es correcto
 def enviar_resultado(data):
-    url = "http://localhost:5000/tarea_worker"
+    url = "http://localhost:5000/solved_task"
     try:
-        response = requests.post(url, json=data)
+        requests.post(url, json=data)
         print("Resolucion enviada al Coordinador!")
     except Exception as e:
         print("Fallo al enviar el post:", e)
 
-# #Minero: Encargado de realizar el desafio
+# Minero
 def minero(ch, method, properties, body):
+    
     data = json.loads(body)
     print(f"Bloque {data} recibido")
-
-    tiempo_inicial = time.time()
+    startTime  = time.time()
     print("Minero comenzado!")
-    resultado = minero_gpu.ejecutar_minero(1, data["max_random"], data["prefix"], data["base_string_chain"])
+    # Salida: {"numero": 278310, "hash_md5_result": "00000879bbaa8f7bdd50fac39acefd64"}
+    resultado = minero_gpu.ejecutar_minero(1, data["numMaxRandom"], data["prefijo"], data["baseStringChain"])
     
     resultado = json.loads(resultado)
-    data["hash"] = resultado['hash_md5_result']
-    data["numero"] = resultado["numero"]
+    processingTime = time.time() - startTime
+    dataResult = {
+                'blockId': data['blockId'],
+                'processingTime': processingTime,
+                'hash': resultado['hash_md5_result'],
+                'result': resultado["numero"]   
+            }
 
-    enviar_resultado(data)
+    enviar_resultado(dataResult)
     #Confirmo con un ACK que lo resolvi
     ch.basic_ack(delivery_tag=method.delivery_tag)
-    print(f"Resultado encontrado y enviado con el ID Bloque {data['id']}")
+    print(f"Resultado encontrado y enviado con el ID Bloque {data['blockId']}")
 
 #Conexion con rabbit al topico y comienza a ser consumidor
 def main():
+ 
     exchangeBlock = 'ExchangeBlock'
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host='localhost')

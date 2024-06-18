@@ -75,7 +75,7 @@ def calculateHash(data):
 
 def getUltimoBlock():
 
-    ultimoBlock = client.lindex('blockchain',0)
+    ultimoBlock = client.lindex('blockchain', 0)
     if ultimoBlock:
         return json.loads(ultimoBlock)
     return None 
@@ -101,7 +101,7 @@ def subirBlock(bucket,block): #bucket, block
     blockId = block['blockId']
     jsonBlock = json.dumps(block)
 
-    fileName =  (f'block_{blockId}.json')
+    fileName = (f'block_{blockId}.json')
 
     # Crear un blob (objeto en el bucket) con el nombre deseado
     blob = bucket.blob(fileName)
@@ -159,15 +159,15 @@ def status():
 def receive_solved_task():
     
     newBlock = {
-        'blockId': "None",
-        'hash': "None",
-        'hashPrevio': "None",
-        'nonce': "None",
-        'prefijo': "None",
-        'transactions': "None",
-        'timestamp': "None",
-        'blockchainContent': "None",
-        'baseStringChain' : "None"
+        'blockId': None,
+        'hash': None,
+        'hashPrevio': None,
+        'nonce': None,
+        'prefijo': None,
+        'transactions': None,
+        'timestamp': None,
+        'blockchainContent': None,
+        'baseStringChain' : None
     }
 
     data = request.get_json()
@@ -179,9 +179,9 @@ def receive_solved_task():
         print(f"Received data: {data}")
         
         bucket=bucketConnect(bucketName, credentialPath)
-        block = descargarBlock(bucket,data['blockId'])
+        block = descargarBlock(bucket, data['blockId'])
        
-        dataHash = data['result'] + block['baseStringChain'] + block['blockchainContent']
+        dataHash = str(data['result']) + str(block['baseStringChain']) + str(block['blockchainContent'])
         hashResult = calculateHash(dataHash)
         timestamp = time.time()
         print(f"[x] Hash recibido: {data['hash']}")
@@ -210,18 +210,18 @@ def receive_solved_task():
                 try:
                     ultimoBloque = getUltimoBlock()
                 except:
-                    ultimoBloque = 'Null'
+                    ultimoBloque = None
                 
                 if ultimoBloque != None:
                     print('[x] Hay bloque anterior » Conectar bloques')
 
                     # Conectar los bloques
-                    print(f"[x] Hash del ultimo bloque: {ultimoBloque['hash']}")
                     newBlock['hashPrevio'] = ultimoBloque['hash']
+                    print(f"[x] Hash del ultimo bloque: {ultimoBloque['hash']}")
 
                 else:
                     print('[x] No hay bloque anterior » Bloque genesis')
-                    newBlock['hashPrevio'] = 'None'
+                    newBlock['hashPrevio'] = None
 
             # Armamos bloque
 
@@ -243,31 +243,29 @@ def receive_solved_task():
             return jsonify({'message': 'El Hash recibido es invalido » DESCARTADO'}), 200
         # Aquí puedes agregar la lógica de procesamiento de datos
 
-        # Respuesta exitosa
-        return jsonify({'status': 'success', 'message': 'Data received'}), 200
     else:
         # Si no se reciben datos, responde con un error
         return jsonify({'status': 'error', 'message': 'No data received'}), 400
 
 
-def proccesPackages():
+# def proccesPackages():
 
-    # Consumir Mensaje de la Cola
-    while True:
-        method_frame, header_frame, body = channel.basic_get(queue=queueNameTx)
-        if method_frame:
-            print(f" [x] Desencole:  {body.decode()}")
-            # Acknowledge the message
-            channel.basic_ack(method_frame.delivery_tag)
-        else:
-            print(" [x] No hay mas mensajes. Los proximos se sacaran en 60 segundos.")
-            break
-        time.sleep(10)  # Esperar un segundo antes de intentar de nuevo
+#     # Consumir Mensaje de la Cola
+#     while True:
+#         method_frame, header_frame, body = channel.basic_get(queue=queueNameTx)
+#         if method_frame:
+#             print(f" [x] Desencole:  {body.decode()}")
+#             # Acknowledge the message
+#             channel.basic_ack(method_frame.delivery_tag)
+#         else:
+#             print(" [x] No hay mas mensajes. Los proximos se sacaran en 60 segundos.")
+#             break
+#         time.sleep(10)  # Esperar un segundo antes de intentar de nuevo
     
 def probando():
     while True:
         contadorTransaction = 0
-        print('[x] Buscando Transsaciones')
+        print('[x] Buscando Transacciones')
         print('---------------------------')
         print('')
         listaTransactions = []
@@ -290,41 +288,38 @@ def probando():
             print('')
 
             maxRandom = 99999999
-            blockId = str(random.randint(0,maxRandom))
+            blockId = str(random.randint(0, maxRandom))
 
             block = {
                 "blockId": blockId,
                 "transactions": listaTransactions,
                 "prefijo": '000',
                 "baseStringChain": "A3F8",
-                "blockchainContent": getUltimoBlock()['blockchainContent'] if getUltimoBlock() else "[]",
+                "blockchainContent": getUltimoBlock()['blockchainContent'] if getUltimoBlock() else [],
                 "numMaxRandom": maxRandom 
             }
 
             print(f"blockchainContent: {block['blockchainContent']}")
-            # Simulamos el bucket
 
+            # Guardar en bucket
             global datosBucket 
-       
             datosBucket.append(block)
 
             # Me conecto al bucket
-
             bucket = bucketConnect(bucketName, credentialPath)
             subirBlock(bucket, block)
 
             # Publicar el bloque en el Topic
-            
             channel.basic_publish(exchange= exchangeBlock, routing_key='blocks', body=json.dumps(block))
             print(f'[x] Bloque {blockId} enviado')
             print('')
 
-        
+
         time.sleep(timer)
 
 
 
-# Conectacmos a la cola
+# Conectamos a la cola
      
 connection, channel = queueConnect()
 client = redisConnect()

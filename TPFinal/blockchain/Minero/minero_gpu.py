@@ -42,10 +42,11 @@ def ejecutar_minero(from_val, to_val, prefix, hash_val):
             encontrado = True
         desde += (512 * 150)
         rep += 1
-        #print(f"Tiempo de ejecución: {execution_time} segundos")
+        
+        # print(f"Tiempo de ejecución: {execution_time} segundos")
     end_time_total = time.time()
     execution_time_total = end_time_total - start_time_total
-    #print(f"Tiempo de ejecución total: {execution_time_total} segundos")
+    # print(f"Tiempo de ejecución total: {execution_time_total} segundos")
     # Ejecutar el comando de ejecución
 
     print(execute_process.args)
@@ -62,4 +63,4 @@ def ejecutar_minero(from_val, to_val, prefix, hash_val):
 
 # Ejemplo de uso
 if __name__ == "__main__":
-    ejecutar_minero(1, 1000000, "000000", "PAPA")
+    ejecutar_minero(1, 10000000, "00000", "PAPA")
