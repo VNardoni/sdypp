@@ -67,9 +67,9 @@ def validarTransaction(transaction):
         return False
     
 def calculateHash(data):
-    hash_sha256 = hashlib.sha256()
-    hash_sha256.update(data.encode('utf-8'))
-    return hash_sha256.hexdigest()
+    hash_md5 = hashlib.md5()
+    hash_md5.update(data.encode('utf-8'))
+    return hash_md5.hexdigest()
 
 # --- Metodos Redis --- #
 
@@ -180,8 +180,7 @@ def receive_solved_task():
         
         bucket=bucketConnect(bucketName, credentialPath)
         block = descargarBlock(bucket, data['blockId'])
-       
-        dataHash = str(data['result']) + str(block['baseStringChain']) + str(block['blockchainContent'])
+        dataHash = data['result'] + block['baseStringChain'] + block['blockchainContent']
         hashResult = calculateHash(dataHash)
         timestamp = time.time()
         print(f"[x] Hash recibido: {data['hash']}")
@@ -246,23 +245,8 @@ def receive_solved_task():
     else:
         # Si no se reciben datos, responde con un error
         return jsonify({'status': 'error', 'message': 'No data received'}), 400
-
-
-# def proccesPackages():
-
-#     # Consumir Mensaje de la Cola
-#     while True:
-#         method_frame, header_frame, body = channel.basic_get(queue=queueNameTx)
-#         if method_frame:
-#             print(f" [x] Desencole:  {body.decode()}")
-#             # Acknowledge the message
-#             channel.basic_ack(method_frame.delivery_tag)
-#         else:
-#             print(" [x] No hay mas mensajes. Los proximos se sacaran en 60 segundos.")
-#             break
-#         time.sleep(10)  # Esperar un segundo antes de intentar de nuevo
     
-def probando():
+def processPackages():
     while True:
         contadorTransaction = 0
         print('[x] Buscando Transacciones')
@@ -279,7 +263,7 @@ def probando():
                 print('')
                 channel.basic_ack(method_frame.delivery_tag)
             else:
-                print('[x] No hay transsaciones')
+                print('[x] No hay transacciones')
                 print(f'[x] Cantidad de trasacciones desencoladas: {contadorTransaction}')
                 print('')
                 break
@@ -295,7 +279,7 @@ def probando():
                 "transactions": listaTransactions,
                 "prefijo": '000',
                 "baseStringChain": "A3F8",
-                "blockchainContent": getUltimoBlock()['blockchainContent'] if getUltimoBlock() else [],
+                "blockchainContent": getUltimoBlock()['blockchainContent'] if getUltimoBlock() else "0",
                 "numMaxRandom": maxRandom 
             }
 
@@ -324,7 +308,7 @@ def probando():
 connection, channel = queueConnect()
 client = redisConnect()
 
-status_thread = threading.Thread(target=probando)
+status_thread = threading.Thread(target=processPackages)
 status_thread.start()
 
 if __name__ == '__main__':

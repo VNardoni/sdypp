@@ -9,10 +9,10 @@ hostRabbit = 'localhost'
 queueNameTx = 'QueueTransactions'
 exchangeBlock = 'ExchangeBlock'
 
-def calcularSha256(texto):
-    hash_sha256 = hashlib.sha256()
-    hash_sha256.update(texto.encode('utf-8'))
-    return hash_sha256.hexdigest()
+def calculateHash(data):
+    hash_md5 = hashlib.md5()
+    hash_md5.update(data.encode('utf-8'))
+    return hash_md5.hexdigest()
 
 def sendResult(data):
     url = "http://localhost:5000/solved_task"
@@ -45,8 +45,9 @@ def on_message_received(ch, method, properties, body):
 
     while not encontrado:
         intentos = intentos + 1
-        randomNumber = str(random.randint(0,data['numMaxRandom']))
-        hashCalculado = calcularSha256(randomNumber + data['baseStringChain'] + data['blockchainContent'])
+        randomNumber = str(random.randint(0, data['numMaxRandom']))
+        
+        hashCalculado = calculateHash(randomNumber + data['baseStringChain'] + data['blockchainContent'])
         if hashCalculado.startswith(data['prefijo']):
             encontrado = True
             processingTime = time.time() - startTime

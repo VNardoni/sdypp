@@ -21,7 +21,8 @@ def minero(ch, method, properties, body):
     startTime  = time.time()
     print("Minero comenzado!")
     # Salida: {"numero": 278310, "hash_md5_result": "00000879bbaa8f7bdd50fac39acefd64"}
-    resultado = minero_gpu.ejecutar_minero(1, data["numMaxRandom"], data["prefijo"], data["baseStringChain"])
+    hash_val = data["baseStringChain"] + data["blockchainContent"]
+    resultado = minero_gpu.ejecutar_minero(1, data["numMaxRandom"], data["prefijo"], hash_val)
     
     resultado = json.loads(resultado)
     processingTime = time.time() - startTime
@@ -29,7 +30,7 @@ def minero(ch, method, properties, body):
                 'blockId': data['blockId'],
                 'processingTime': processingTime,
                 'hash': resultado['hash_md5_result'],
-                'result': resultado["numero"]   
+                'result': str(resultado["numero"])   
             }
 
     enviar_resultado(dataResult)
